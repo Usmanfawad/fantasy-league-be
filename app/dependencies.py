@@ -1,15 +1,23 @@
+from dataclasses import dataclass
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
-from sqlmodel import Session, select
+from sqlmodel import Session
 
+from app.db_models import Manager
 from app.settings import settings
-from app.user.models import User, UserRole
+from app.user.models import UserRole
 from app.utils.db import get_session
 
 security = HTTPBearer()
+
+
+@dataclass
+class AuthUser:
+    id: int
+    role: UserRole
 
 
 class AuthDependency:
@@ -18,7 +26,7 @@ class AuthDependency:
         request: Request,
         credentials: HTTPAuthorizationCredentials = Depends(security),
         session: Session = Depends(get_session),
-    ) -> User:
+    ) -> AuthUser:
         """
         Dependency to get the current authenticated user from the JWT token
         """
@@ -36,38 +44,31 @@ class AuthDependency:
                     headers={"WWW-Authenticate": "Bearer"},
                 )
 
-            # Get user from database
-            statement = select(User).where(User.id == int(user_id))
-            user = session.exec(statement).first()
+            # Get manager from database
+            manager = session.get(Manager, int(user_id))
 
-            if not user:
+            if not manager:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="User not found",
+                    detail="Manager not found",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
 
-            if not user.is_active:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Inactive user",
-                )
+            auth_user = AuthUser(id=manager.manager_id, role=UserRole.MANAGER)
+            request.state.user = auth_user
+            return auth_user
 
-            # Add user object to request state
-            request.state.user = user
-            return user
-
-        except JWTError:
+        except JWTError as err:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Could not validate credentials",
                 headers={"WWW-Authenticate": "Bearer"},
-            )
-        except Exception as e:
+            ) from err
+        except Exception as err:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Authentication error: {e!s}",
-            ) from e
+                detail=f"Authentication error: {err!s}",
+            ) from err
 
     @staticmethod
     def check_roles(allowed_roles: list[UserRole]):
@@ -76,8 +77,8 @@ class AuthDependency:
         """
 
         async def role_checker(
-            user: User = Depends(AuthDependency.get_current_user),
-        ) -> User:
+            user: AuthUser = Depends(AuthDependency.get_current_user),
+        ) -> AuthUser:
             if user.role not in allowed_roles:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
@@ -92,11 +93,11 @@ class AuthDependency:
 get_current_user = AuthDependency.get_current_user
 require_admin = AuthDependency.check_roles([UserRole.ADMIN])
 require_manager = AuthDependency.check_roles([UserRole.MANAGER, UserRole.ADMIN])
-require_user = AuthDependency.check_roles([UserRole.USER, UserRole.MANAGER, UserRole.ADMIN])
+require_user = AuthDependency.check_roles([UserRole.USER, UserRole.MANAGER, UserRole.ADMIN])  # noqa: E501
 
 # Type hints for dependency injection
-CurrentUser = Annotated[User, Depends(get_current_user)]
-AdminUser = Annotated[User, Depends(require_admin)]
-ManagerUser = Annotated[User, Depends(require_manager)]
-AnyUser = Annotated[User, Depends(require_user)]
+CurrentUser = Annotated[AuthUser, Depends(get_current_user)]
+AdminUser = Annotated[AuthUser, Depends(require_admin)]
+ManagerUser = Annotated[AuthUser, Depends(require_manager)]
+AnyUser = Annotated[AuthUser, Depends(require_user)]
 

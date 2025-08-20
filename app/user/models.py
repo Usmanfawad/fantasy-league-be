@@ -1,4 +1,3 @@
-from datetime import UTC, datetime
 from enum import Enum
 
 from pydantic import EmailStr
@@ -17,17 +16,13 @@ class UserBase(SQLModel):
     """Base user model with common fields."""
 
     email: EmailStr = Field(unique=True, index=True)
-    is_active: bool = True
     role: UserRole = UserRole.USER
 
 
-class User(UserBase, table=True):
-    """User database model."""
-
-    id: int | None = Field(default=None, primary_key=True)
-    hashed_password: str
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+"""
+Deprecated database model removed to avoid creating a duplicate 'manager' table.
+We keep only non-table schemas and enums in this module.
+"""
 
 
 class UserRead(UserBase):

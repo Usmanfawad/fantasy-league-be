@@ -177,35 +177,11 @@ def seed_scoring_rules(session: Session, positions: list[Position]) -> None:
     session.commit()
 
 
-def seed_managers(session: Session, teams: list[Team], players: list[Player], count: int = 5) -> list[Manager]:
-    existing = session.exec(select(Manager)).all()
-    if existing:
-        return existing
-    managers: list[Manager] = []
-    for i in range(1, count + 1):
-        fav_team = random.choice(teams)
-        fav_player = random.choice(players)
-        managers.append(
-            Manager(
-                manager_id=i,
-                mng_firstname=fake.first_name(),
-                mng_lastname=fake.last_name(),
-                squad_name=f"{fake.color_name()} {fake.word().capitalize()} FC",
-                email=fake.unique.email(),
-                hashed_password=fake.sha256(),
-                birthdate=fake.date_time_between(start_date="-50y", end_date="-18y"),
-                city=fake.city(),
-                fav_team_id=fav_team.team_id,
-                fav_player_id=fav_player.player_id,
-                created_at=datetime.now(UTC).replace(tzinfo=None),
-                updated_at=datetime.now(UTC).replace(tzinfo=None),
-                mng_datapoint=fake.word(),
-                wallet=random.randrange(0, 200),
-            )
-        )
-    session.add_all(managers)
-    session.commit()
-    return managers
+def seed_managers(
+    session: Session, teams: list[Team], players: list[Player], count: int = 5
+) -> list[Manager]:
+    """No-op: managers are not created by the seeder. Return existing managers only."""
+    return session.exec(select(Manager)).all()
 
 
 def seed_manager_squads(
@@ -281,6 +257,8 @@ def seed_prices_and_stats(
 
 def seed_transfers(session: Session, managers: list[Manager], players: list[Player], gws: list[Gameweek]) -> None:
     if session.exec(select(Transfer)).first():
+        return
+    if not managers or not players or not gws:
         return
     for _ in range(50):
         manager = random.choice(managers)

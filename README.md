@@ -27,7 +27,7 @@ uvicorn app.main:app --reload --proxy-headers
 - Base path: `settings.API_V1_PREFIX` (default `/api/v1`)
 - Health: `GET /healthz` (public)
 - Auth: `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `GET /api/v1/auth/me`
-- Users: CRUD under `/api/v1/users` with role-based access
+- Managers: CRUD under `/api/v1/managers` with role-based access
 
 ### Configuration
 Edit `settings.py` or set env vars in `.env`:

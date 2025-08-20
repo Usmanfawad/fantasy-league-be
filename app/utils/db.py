@@ -43,5 +43,6 @@ def get_session() -> Generator[Session, None, None]:
 
 
 def create_db_and_tables() -> None:
-    """Create database tables if they don't exist."""
+    """Drop all database tables and recreate them (destructive)."""
+    SQLModel.metadata.drop_all(engine, checkfirst=True)
     SQLModel.metadata.create_all(engine)

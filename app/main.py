@@ -1,4 +1,3 @@
-from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -21,18 +20,24 @@ from starlette.responses import Response
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 from app.auth.routes import auth_router
+from app.fixtures.routes import fixtures_router
 from app.logger import logger
 from app.manager.routes import manager_router
 from app.player.routes import player_router
+from app.scoring.routes import scoring_router
 from app.settings import settings
-from app.user.routes import user_router
-from app.utils.db import create_db_and_tables
+from app.team.routes import team_router
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    create_db_and_tables()
-    yield
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     # Initialize and seed the database on startup
+#     create_db_and_tables()
+#     try:
+#         from app.scripts.seed_db import main as seed_main
+#         seed_main()
+#     except Exception as _seed_err: 
+#         logger.warning(f"Seeding skipped or failed: {_seed_err!s}")
+#     yield
 
 
 app = FastAPI(
@@ -83,9 +88,12 @@ def healthz():
 
 app.include_router(router, prefix="")
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth")
-app.include_router(user_router, prefix=f"{settings.API_V1_PREFIX}/users")
+# Deprecated user routes removed to avoid confusion with manager domain
 app.include_router(player_router, prefix=f"{settings.API_V1_PREFIX}")
+app.include_router(team_router, prefix=f"{settings.API_V1_PREFIX}")
 app.include_router(manager_router, prefix=f"{settings.API_V1_PREFIX}")
+app.include_router(fixtures_router, prefix=f"{settings.API_V1_PREFIX}")
+app.include_router(scoring_router, prefix=f"{settings.API_V1_PREFIX}")
 
 
 # Structured error handling

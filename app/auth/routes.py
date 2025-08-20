@@ -1,9 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from sqlmodel import Session, select
+from time import time
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel, EmailStr
+from sqlmodel import Session
 
 from app.auth.service import AuthService
-from app.dependencies import AdminUser, CurrentUser
-from app.user.models import User, UserCreate, UserLogin, UserRead
+from app.db_models import Manager
+from app.dependencies import CurrentUser
 from app.utils.db import get_session
 from app.utils.responses import ResponseSchema
 
@@ -14,13 +17,30 @@ _LOGIN_WINDOW_SEC = 60
 _LOGIN_MAX_ATTEMPTS = 5
 
 
+class ManagerSignUp(BaseModel):
+    firstname: str
+    lastname: str
+    email: EmailStr
+    password: str
+    birthdate: str | None = None
+    city: str | None = None
+    fav_team: int | None = None
+    fav_player: int | None = None
+    squad_name: str
+
+
+class ManagerLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
 @auth_router.post("/sign-up")
-async def register(user_create: UserCreate, session: Session = Depends(get_session)):
+async def register(manager: ManagerSignUp, session: Session = Depends(get_session)):
     try:
-        user = await AuthService.create_user(session, user_create)
+        created = await AuthService.create_manager(session, manager.model_dump())
         return ResponseSchema.success(
-            data=UserRead.model_validate(user).model_dump(),
-            message="Registration successful",
+            data={"manager_id": created.manager_id},
+            message="Account created successfully",
         )
     except HTTPException as e:
         return ResponseSchema.bad_request(message=str(e.detail))
@@ -28,21 +48,15 @@ async def register(user_create: UserCreate, session: Session = Depends(get_sessi
         return ResponseSchema.bad_request(message=f"Registration failed: {e!s}")
 
 
-@auth_router.post("/register")
-async def register_alias(user_create: UserCreate, session: Session = Depends(get_session)):
-    # Alias for spec compatibility
-    return await register(user_create, session)
-
 
 @auth_router.post("/login")
 async def login(
-    user_login: UserLogin,
+    user_login: ManagerLogin,
     request: Request,
     session: Session = Depends(get_session),
 ):
     try:
         # Rate limiting per IP
-        from time import time
 
         ip = request.client.host if request.client else "unknown"
         now = time()
@@ -57,43 +71,60 @@ async def login(
         _login_attempts[ip] = window
 
         auth_service = AuthService(session)
-        user = await auth_service.authenticate_user(user_login.email, user_login.password)
+        manager: Manager = await auth_service.authenticate_manager(user_login.email, user_login.password)
 
-        if not user:
+        if not manager:
             return ResponseSchema.unauthorized(
                 message="Invalid credentials", error="InvalidCredentials"
             )
 
         access_token = auth_service.create_access_token(
-            data={"sub": str(user.id), "role": user.role}
+            data={
+                "sub": str(manager.manager_id),
+                "role": "manager",
+                "email": manager.email,
+                "squad_name": manager.squad_name,
+            }
         )
 
         return ResponseSchema.success(
             data={
                 "access_token": access_token,
                 "token_type": "bearer",
-                "user": UserRead.model_validate(user),
+                "manager_id": manager.manager_id,
+                "squad_name": manager.squad_name,
             },
             message="Login successful",
         )
 
     except Exception as e:
-        return ResponseSchema.internal_server_error(message="Login failed", error=str(e))
+        return ResponseSchema.internal_server_error(
+            message="Login failed", error=str(e)
+        )
 
 
-@auth_router.get("/me", response_model=UserRead)
-async def read_users_me(current_user: CurrentUser):
-    return current_user
+@auth_router.get("/me")
+async def read_managers_me(current_user: CurrentUser, session: Session = Depends(get_session)):
+    # current_user is a lightweight auth user; fetch full manager info
+    mgr = session.get(Manager, current_user.id)
+    if not mgr:
+        return ResponseSchema.not_found("Manager not found")
+    return ResponseSchema.success(
+        data={
+            "manager_id": mgr.manager_id,
+            "email": mgr.email,
+            "squad_name": mgr.squad_name,
+            "firstname": mgr.mng_firstname,
+            "lastname": mgr.mng_lastname,
+        }
+    )
 
 
-@auth_router.get("/users", response_model=list[UserRead])
-async def get_users(admin_user: AdminUser, session: Session = Depends(get_session)):
-    try:
-        users = session.exec(select(User)).all()
-        return users
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve users: {e!s}",
-        ) from e
+# Optional utility endpoint to list managers (simple pagination could be added)
+@auth_router.get("/managers")
+async def get_managers(session: Session = Depends(get_session)):
+    rows = session.exec(select(Manager)).all()
+    return ResponseSchema.success(
+        data=[{"manager_id": m.manager_id, "email": m.email, "squad_name": m.squad_name} for m in rows]
+    )
 

@@ -82,7 +82,7 @@ class Manager(SQLModel, table=True):
     squad_name: str
     email: str
     hashed_password: str
-    birthdate: datetime
+    birthdate: datetime | None = None
     city: str | None = None
     fav_team_id: int | None = Field(default=None, foreign_key="teams.team_id")
     fav_player_id: int | None = Field(default=None, foreign_key="players.player_id")
