@@ -21,6 +21,29 @@ class ManagerService:
     def __init__(self, session: Session):
         self.session = session
 
+    def _validate_position_quotas(self, player_ids: list[int]) -> tuple[bool, str]:
+        """Validate position quotas for a list of player IDs.
+        Returns (is_valid, error_message)"""
+        rows = self.session.exec(
+            select(Player, Team).where(Player.player_id.in_(player_ids)).join(
+                Team, Team.team_id == Player.team_id
+            )
+        ).all()
+        
+        team_counts: dict[int, int] = defaultdict(int)
+        pos_counts: dict[int, int] = defaultdict(int)
+        for player, team in rows:
+            team_counts[team.team_id] += 1
+            pos_counts[player.position_id] += 1
+            if team_counts[team.team_id] > 3:
+                return False, "No more than 3 players from the same team"
+
+        required = {1: 2, 2: 5, 3: 5, 4: 3}  # GK: 2, DEF: 5, MID: 5, FWD: 3
+        if any(pos_counts.get(pid, 0) != count for pid, count in required.items()):
+            return False, "Position quotas not satisfied"
+            
+        return True, "OK"
+
     def get_active_gameweek(self) -> Gameweek | None:
         return self.session.exec(select(Gameweek).where(Gameweek.status == "active")).first()
 
@@ -36,7 +59,9 @@ class ManagerService:
 
         player_ids = [p["player_id"] for p in players_payload]
         rows = self.session.exec(
-            select(Player, Team).where(Player.player_id.in_(player_ids)).join(Team, Team.team_id == Player.team_id)
+            select(Player, Team).where(Player.player_id.in_(player_ids)).join(
+                Team, Team.team_id == Player.team_id
+            )
         ).all()
         if len(rows) != 15:
             return "Invalid player IDs or duplicates provided"
@@ -113,7 +138,9 @@ class ManagerService:
             select(ManagersSquad, PlayerStat)
             .where(ManagersSquad.manager_id == manager_id)
             .where(ManagersSquad.gw_id == gw.gw_id)
-            .join(PlayerStat, (PlayerStat.player_id == ManagersSquad.player_id) & (PlayerStat.gw_id == ManagersSquad.gw_id))
+            .join(PlayerStat, (PlayerStat.player_id == ManagersSquad.player_id) & (
+                PlayerStat.gw_id == ManagersSquad.gw_id
+            ))
         ).all()
         total_points = sum(ps.total_points for (_, ps) in rows)
         details = [
@@ -136,7 +163,9 @@ class ManagerService:
         rows = self.session.exec(
             select(Manager.manager_id, Manager.squad_name, PlayerStat.total_points)
             .join(ManagersSquad, ManagersSquad.manager_id == Manager.manager_id)
-            .join(PlayerStat, (PlayerStat.player_id == ManagersSquad.player_id) & (PlayerStat.gw_id == ManagersSquad.gw_id))
+            .join(PlayerStat, (PlayerStat.player_id == ManagersSquad.player_id) & (
+                PlayerStat.gw_id == ManagersSquad.gw_id
+            ))
             .where(ManagersSquad.gw_id == gw.gw_id)
         ).all()
         totals: dict[int, int] = defaultdict(int)
@@ -145,7 +174,8 @@ class ManagerService:
             totals[mid] += pts
             names[mid] = name
         items = sorted(
-            ({"manager_id": mid, "squad_name": names[mid], "points": pts} for mid, pts in totals.items()),
+            ({"manager_id": mid, "squad_name": names[mid], "points": pts} 
+            for mid, pts in totals.items()),
             key=lambda i: i["points"],
             reverse=True,
         )
@@ -173,6 +203,14 @@ class ManagerService:
             return "Player out is not in current squad"
         if player_in_id in current_ids:
             return "Player in is already in current squad"
+            
+        # Create new squad list with the transfer applied
+        new_squad = [pid for pid in current_ids if pid != player_out_id] + [player_in_id]
+        
+        # Validate position quotas
+        is_valid, error_msg = self._validate_position_quotas(new_squad)
+        if not is_valid:
+            return error_msg
 
         manager = self.session.get(Manager, manager_id)
         if not manager:
@@ -224,6 +262,38 @@ class ManagerService:
         ).first()
         if not out_row or not in_row:
             return "Both players must be in the squad"
+            
+        # Get all current starters
+        starters = self.session.exec(
+            select(ManagersSquad.player_id, Player.position_id)
+            .where(
+                (ManagersSquad.manager_id == manager_id)
+                & (ManagersSquad.gw_id == gw.gw_id)
+                & (ManagersSquad.is_starter == True)  # noqa: E712
+            )
+            .join(Player, Player.player_id == ManagersSquad.player_id)
+        ).all()
+        
+        # Calculate new starters after substitution
+        starter_ids = set(pid for pid, _ in starters)
+        if out_row.is_starter:
+            starter_ids.remove(player_out_id)
+            starter_ids.add(player_in_id)
+        elif in_row.is_starter:
+            starter_ids.remove(player_in_id)
+            starter_ids.add(player_out_id)
+            
+        # Validate starting 11 positions
+        pos_counts: dict[int, int] = defaultdict(int)
+        for _, pos_id in starters:
+            pos_counts[pos_id] += 1
+            
+        # Basic formation validation (at least 1 GK, 3 DEF, 2 MID, 1 FWD)
+        min_required = {1: 1, 2: 3, 3: 2, 4: 1}
+        if any(pos_counts.get(pid, 0) < count for pid, count in min_required.items()):
+            return "Invalid formation after substitution"
+            
+        # Apply the substitution
         out_row.is_starter, in_row.is_starter = in_row.is_starter, out_row.is_starter
         self.session.add(out_row)
         self.session.add(in_row)

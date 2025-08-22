@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from uuid import UUID
 
 import bcrypt
 from fastapi import HTTPException, status

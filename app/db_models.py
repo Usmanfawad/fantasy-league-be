@@ -3,9 +3,10 @@ from __future__ import annotations
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
+from uuid import UUID, uuid4
 
 from sqlalchemy import Column
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, UUID as PgUUID
 from sqlalchemy.sql.sqltypes import DateTime, Numeric
 from sqlmodel import Field, SQLModel
 
@@ -63,7 +64,7 @@ class ManagerActivityLog(SQLModel, table=True):
     __tablename__ = "manager_activity_logs"
 
     log_id: int = Field(primary_key=True)
-    manager_id: int = Field(foreign_key="managers.manager_id")
+    manager_id: UUID = Field(foreign_key="managers.manager_id")
     action: str
     context: dict[str, Any] | None = Field(
         default=None, sa_column=Column(JSONB, nullable=True)
@@ -76,7 +77,11 @@ class ManagerActivityLog(SQLModel, table=True):
 class Manager(SQLModel, table=True):
     __tablename__ = "managers"
 
-    manager_id: int = Field(primary_key=True)
+    manager_id: UUID = Field(
+        default_factory=uuid4,
+        primary_key=True,
+        sa_column=Column(PgUUID(as_uuid=True), primary_key=True, nullable=False)
+    )
     mng_firstname: str
     mng_lastname: str
     squad_name: str
@@ -181,7 +186,7 @@ class Transfer(SQLModel, table=True):
     __tablename__ = "transfers"
 
     transfer_id: int = Field(primary_key=True)
-    manager_id: int = Field(foreign_key="managers.manager_id")
+    manager_id: UUID = Field(foreign_key="managers.manager_id")
     player_in_id: int = Field(foreign_key="players.player_id")
     player_out_id: int = Field(foreign_key="players.player_id")
     gw_id: int = Field(foreign_key="gameweeks.gw_id")
