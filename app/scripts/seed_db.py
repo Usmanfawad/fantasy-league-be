@@ -42,17 +42,27 @@ def seed_positions(session: Session) -> list[Position]:
     return positions
 
 
-def seed_teams(session: Session, count: int = 10) -> list[Team]:
+def seed_teams(session: Session, count: int = 6) -> list[Team]:
     existing = session.exec(select(Team)).all()
     if existing:
         return existing
+    
+    teams_data = [
+        ("Wydad Athletic Club", "WAC"),
+        ("Raja Club Athletic", "RCA"),
+        ("FUS Rabat", "FUS"),
+        ("Maghreb Association Sportive", "MAS"),
+        ("Moghreb Athletic Tetouan", "MAT"),
+        ("Olympic Club Safi", "OCS")
+    ]
+    
     teams: list[Team] = []
-    for i in range(1, count + 1):
+    for i, (name, shortname) in enumerate(teams_data, 1):
         teams.append(
             Team(
                 team_id=i,
-                team_name=fake.unique.company(),
-                team_shortname=f"T{i:02d}",
+                team_name=name,
+                team_shortname=shortname,
                 team_logo_url=fake.image_url(),
                 created_at=datetime.now(UTC),
                 updated_at=datetime.now(UTC),
@@ -96,7 +106,7 @@ def seed_players(
     return players
 
 
-def seed_gameweeks(session: Session, count: int = 5) -> list[Gameweek]:
+def seed_gameweeks(session: Session, count: int = 3) -> list[Gameweek]:
     existing = session.exec(select(Gameweek)).all()
     if existing:
         return existing
@@ -111,7 +121,7 @@ def seed_gameweeks(session: Session, count: int = 5) -> list[Gameweek]:
                 gw_number=i,
                 start_date=start.replace(tzinfo=None),
                 end_date=end.replace(tzinfo=None),
-                status="upcoming" if i > 1 else "active",
+                status="Ongoing" if i == 1 else "Upcoming",
                 created_at=datetime.now(UTC).replace(tzinfo=None),
                 updated_at=datetime.now(UTC).replace(tzinfo=None),
             )
@@ -192,15 +202,20 @@ def seed_manager_squads(
         return
     for manager in managers:
         for gw in gws:
-            squad = random.sample(players, k=11)
-            for idx, player in enumerate(squad):
+            # Select 5 players like notebook does
+            selected_players = random.sample(players, k=5)
+            captain = random.choice(selected_players)
+            others = [p for p in selected_players if p != captain]
+            vice_captain = random.choice(others) if others else None
+            
+            for player in selected_players:
                 session.add(
                     ManagersSquad(
                         manager_id=manager.manager_id,
                         player_id=player.player_id,
                         gw_id=gw.gw_id,
-                        is_captain=idx == 0,
-                        is_vice_captain=idx == 1,
+                        is_captain=player == captain,
+                        is_vice_captain=player == vice_captain,
                         is_starter=True,
                     )
                 )
@@ -228,13 +243,22 @@ def seed_prices_and_stats(
             )
             started = random.random() < 0.7
             minutes = random.choice([0, 30, 60, 90]) if started else 0
-            goals = random.randrange(0, 3) if started else 0
-            assists = random.randrange(0, 2) if started else 0
-            yellow = 1 if started and random.random() < 0.1 else 0
-            red = 1 if started and random.random() < 0.02 else 0
-            clean = 1 if started and random.random() < 0.3 else 0
-            bonus = random.randrange(0, 3) if started else 0
-            total_points = goals * 4 + assists * 3 + bonus - yellow - red * 3 + (1 if minutes >= 60 else 0)
+            goals = random.randint(0, 3) if minutes > 0 else 0
+            assists = random.randint(0, 2) if minutes > 0 else 0
+            yellow = random.randint(0, 1) if minutes > 0 else 0
+            red = random.randint(0, 1) if yellow == 1 else 0
+            clean = random.randint(0, 1) if minutes >= 60 else 0
+            bonus = random.randint(0, 3) if minutes > 0 else 0
+            
+            # Points calculation matching notebook
+            total_points = (
+                goals * 5 +
+                assists * 3 +
+                clean * 4 +
+                bonus -
+                yellow -
+                (red * 3)
+            )
             session.add(
                 PlayerStat(
                     player_id=player.player_id,
@@ -281,9 +305,9 @@ def seed_transfers(session: Session, managers: list[Manager], players: list[Play
 def main() -> None:
     with Session(engine) as session:
         positions = seed_positions(session)
-        teams = seed_teams(session, count=10)
-        players = seed_players(session, teams, positions, per_team=15)
-        gws = seed_gameweeks(session, count=5)
+        teams = seed_teams(session)  # Will use 6 Moroccan teams
+        players = seed_players(session, teams, positions, per_team=7)  # Reduced players per team
+        gws = seed_gameweeks(session, count=3)  # Match notebook's 3 gameweeks
         fixtures = seed_fixtures(session, gws, teams)
         seed_scoring_rules(session, positions)
         managers = seed_managers(session, teams, players, count=5)

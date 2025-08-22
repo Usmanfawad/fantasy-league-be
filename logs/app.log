@@ -251,3 +251,1430 @@
 2025-08-20 23:49:37.670 | INFO     | app.main:dispatch:157 - Request completed
 2025-08-20 23:50:21.744 | INFO     | app.main:dispatch:155 - Request started
 2025-08-20 23:50:21.764 | INFO     | app.main:dispatch:157 - Request completed
+2025-08-20 23:55:21.662 | INFO     | app.main:dispatch:154 - Request started
+2025-08-20 23:55:21.778 | INFO     | app.main:dispatch:156 - Request completed
+2025-08-20 23:55:39.802 | INFO     | app.main:dispatch:154 - Request started
+2025-08-20 23:55:39.817 | INFO     | app.main:dispatch:156 - Request completed
+2025-08-20 23:55:51.289 | INFO     | app.main:dispatch:154 - Request started
+2025-08-20 23:55:51.302 | INFO     | app.main:dispatch:156 - Request completed
+2025-08-20 23:56:04.417 | INFO     | app.main:dispatch:154 - Request started
+2025-08-20 23:56:04.487 | INFO     | app.main:dispatch:156 - Request completed
+2025-08-20 23:56:16.088 | INFO     | app.main:dispatch:154 - Request started
+2025-08-20 23:56:16.111 | INFO     | app.main:dispatch:156 - Request completed
+2025-08-22 09:57:29.812 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 09:57:29.818 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 09:57:30.239 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 09:57:30.279 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 09:57:39.890 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 09:57:40.163 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:20:34.432 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:20:34.495 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:20:43.953 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:20:43.986 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:40:22.920 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:40:22.921 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:40:23.087 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:40:23.102 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:42:12.294 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:42:12.295 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:42:12.435 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:42:12.458 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:42:24.970 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:42:25.056 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:42:27.458 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:42:27.464 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:42:32.844 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:42:32.850 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 10:42:39.983 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 10:42:40.052 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 11:36:28.153 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:36:28.188 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 11:36:39.692 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:36:39.707 | ERROR    | app.main:unhandled_exception_handler:137 - Unhandled error on GET http://127.0.0.1:8000/api/v1/players/stats?sort=cumulative_points&page=1&page_size=20: 'PlayerService' object has no attribute '_calculate_cumulative_points'
+  + Exception Group Traceback (most recent call last):
+  |
+  |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_utils.py", line 77, in collapse_excgroups
+  |     yield
+  |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 183, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                │     │                      └ <anyio._backends._asyncio.TaskGroup object at 0x0000020A75F58E90>
+  |                │     └ <function create_task_group at 0x0000020A7238B2E0>
+  |                └ <module 'anyio' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+  |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  |
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |           │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x0000020A75E9F060>
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000020...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <app.main.RequestLoggingMiddleware object at 0x0000020A755D7D40>
+    |           └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x0000020A755D7DD0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |          │            │            └ <function collapse_excgroups at 0x0000020A7329F4C0>
+    |          │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+    |          └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+    |   File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |     │    │   │     └ ExceptionGroup('unhandled errors in a TaskGroup', [AttributeError("'PlayerService' object has no attribute '_calculate_cumula...
+    |     │    │   └ <method 'throw' of 'generator' objects>
+    |     │    └ <generator object collapse_excgroups at 0x0000020A75558D40>
+    |     └ <contextlib._GeneratorContextManager object at 0x0000020A75F5BDD0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_utils.py", line 83, in collapse_excgroups
+    |     raise exc
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                      │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x0000020A75E9F2E0>
+    |                      │    │             └ <starlette.middleware.base._CachedRequest object at 0x0000020A75F59B80>
+    |                      │    └ <bound method RequestLoggingMiddleware.dispatch of <app.main.RequestLoggingMiddleware object at 0x0000020A755D7D40>>
+    |                      └ <app.main.RequestLoggingMiddleware object at 0x0000020A755D7D40>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\main.py", line 154, in dispatch
+    |     response: Response = await call_next(request)
+    |                                │         └ <starlette.middleware.base._CachedRequest object at 0x0000020A75F59B80>
+    |                                └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x0000020A75E9F2E0>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    |     raise app_exc
+    |           └ AttributeError("'PlayerService' object has no attribute '_calculate_cumulative_points'")
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |           │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x0000020A75FCE8E0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x0000020A755D7D10>
+    |           └ <app.main.RequestLoggingMiddleware object at 0x0000020A755D7D40>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    |     await responder(scope, receive, send)
+    |           │         │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x0000020A75FCE8E0>
+    |           │         │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    |     await super().__call__(scope, receive, send)
+    |                            │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x0000020A75FCE8E0>
+    |                            │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |                            └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    |     await self.app(scope, receive, self.send_with_compression)
+    |           │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x0000020A73478860>
+    |           │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.cors.CORSMiddleware object at 0x0000020A755D7CE0>
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x0000020A755D7CB0>
+    |           └ <starlette.middleware.cors.CORSMiddleware object at 0x0000020A755D7CE0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |           │                            │    │    │     │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>>
+    |           │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    │    └ <starlette.requests.Request object at 0x0000020A75F63410>
+    |           │                            │    └ <fastapi.routing.APIRouter object at 0x0000020A75583C80>
+    |           │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x0000020A755D7CB0>
+    |           └ <function wrap_app_handling_exceptions at 0x0000020A733BA160>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |           │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+    |           │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <fastapi.routing.APIRouter object at 0x0000020A75583C80>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |           │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+    |           │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x0000020A75583C80>>
+    |           └ <fastapi.routing.APIRouter object at 0x0000020A75583C80>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    |     await route.handle(scope, receive, send)
+    |           │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+    |           │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │     └ <function Route.handle at 0x0000020A733BB740>
+    |           └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <function request_response.<locals>.app at 0x0000020A7558F740>
+    |           └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 78, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |           │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+    |           │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    └ <starlette.requests.Request object at 0x0000020A75F62510>
+    |           │                            └ <function request_response.<locals>.app.<locals>.app at 0x0000020A75FCE160>
+    |           └ <function wrap_app_handling_exceptions at 0x0000020A733BA160>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |           │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE2A0>
+    |           │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+    |           │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <function request_response.<locals>.app.<locals>.app at 0x0000020A75FCE160>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 75, in app
+    |     response = await f(request)
+    |                      │ └ <starlette.requests.Request object at 0x0000020A75F62510>
+    |                      └ <function get_request_handler.<locals>.app at 0x0000020A7558F880>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 302, in app
+    |     raw_response = await run_endpoint_function(
+    |                          └ <function run_endpoint_function at 0x0000020A733B9B20>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 215, in run_endpoint_function
+    |     return await run_in_threadpool(dependant.call, **values)
+    |                  │                 │         │       └ {'session': <sqlmodel.orm.session.Session object at 0x0000020A75F58260>, 'gw_id': None, 'team_id': None, 'position_id': None,...
+    |                  │                 │         └ <function players_stats at 0x0000020A7558CF40>
+    |                  │                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(None), name='gw_id', mode='validation'), ModelField(field...
+    |                  └ <function run_in_threadpool at 0x0000020A73167E20>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\concurrency.py", line 38, in run_in_threadpool
+    |     return await anyio.to_thread.run_sync(func)
+    |                  │     │         │        └ functools.partial(<function players_stats at 0x0000020A7558CF40>, session=<sqlmodel.orm.session.Session object at 0x0000020A7...
+    |                  │     │         └ <function run_sync at 0x0000020A7230B920>
+    |                  │     └ <module 'anyio.to_thread' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\to_thread.py'>
+    |                  └ <module 'anyio' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    |     return await get_async_backend().run_sync_in_worker_thread(
+    |                  └ <function get_async_backend at 0x0000020A72308CC0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2476, in run_sync_in_worker_thread
+    |     return await future
+    |                  └ <Future finished exception=AttributeError("'PlayerService' object has no attribute '_calculate_cumulative_points'")>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 967, in run
+    |     result = context.run(func, *args)
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\player\routes.py", line 39, in players_stats
+    |     data, total = svc.players_stats(gw_id, team_id, position_id, sort, page, page_size)
+    |                   │   │             │      │        │            │     │     └ 20
+    |                   │   │             │      │        │            │     └ 1
+    |                   │   │             │      │        │            └ 'cumulative_points'
+    |                   │   │             │      │        └ None
+    |                   │   │             │      └ None
+    |                   │   │             └ None
+    |                   │   └ <function PlayerService.players_stats at 0x0000020A7558CEA0>
+    |                   └ <app.player.service.PlayerService object at 0x0000020A75F615E0>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 213, in players_stats
+    |     rows = sorted(rows, key=sort_key, reverse=True)
+    |                   │         └ <function PlayerService.players_stats.<locals>.sort_key at 0x0000020A75FDD300>
+    |                   └ [(PlayerStat(total_points=19, player_id=1, assists=1, goals_scored=2, red_cards=0, bonus_points=2, created_at=datetime.dateti...
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 211, in sort_key
+    |     return float(self._calculate_cumulative_points(p.player_id, current_gw))
+    |                  │                                 │ │          └ 3
+    |                  │                                 │ └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x0000020A75311080>
+    |                  │                                 └ Player(player_firstname='James', player_fullname='James Santos', team_id=1, position_id=1, is_active=True, player_lastname='S...
+    |                  └ <app.player.service.PlayerService object at 0x0000020A75F615E0>
+    |
+    | AttributeError: 'PlayerService' object has no attribute '_calculate_cumulative_points'
+    +------------------------------------
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 380
+               │     └ 3
+               └ <function _main at 0x0000020A6FEF74C0>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 380
+           │    └ <function BaseProcess._bootstrap at 0x0000020A6FDF0FE0>
+           └ <SpawnProcess name='SpawnProcess-1' parent=30980 started>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\process.py", line 314, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x0000020A6FDF0540>
+    └ <SpawnProcess name='SpawnProcess-1' parent=30980 started>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x0000020A6FEAF3B0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-1' parent=30980 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-1' parent=30980 started>
+    │    └ <function subprocess_started at 0x0000020A722DA160>
+    └ <SpawnProcess name='SpawnProcess-1' parent=30980 started>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=628, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x0000020A72439B80>>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\server.py", line 67, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           │       │   │    │             └ [<socket.socket fd=628, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+           │       │   │    └ <function Server.serve at 0x0000020A722D94E0>
+           │       │   └ <uvicorn.server.Server object at 0x0000020A72439B80>
+           │       └ <function run at 0x0000020A70535C60>
+           └ <module 'asyncio' from 'C:\\Users\\ufawa\\AppData\\Roaming\\uv\\python\\cpython-3.12.11-windows-x86_64-none\\Lib\\asyncio\\__...
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x0000020A72406EA0>
+           │      └ <function Runner.run at 0x0000020A71BC71A0>
+           └ <asyncio.runners.Runner object at 0x0000020A722ED160>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x0000020A71BC4E00>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x0000020A722ED160>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 678, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x0000020A71BC4D60>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 645, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x0000020A71BC6B60>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1999, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x0000020A704E4EA0>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x0000020A7234BFE0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000020A75...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000020...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x0000020A726060C0>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x0000020A7234BFE0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000020A75...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000020...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000020A75...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000020...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x0000020A755D7DD0>
+          └ <fastapi.applications.FastAPI object at 0x0000020A726060C0>
+> File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x0000020A75E9F060>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000020...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <app.main.RequestLoggingMiddleware object at 0x0000020A755D7D40>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x0000020A755D7DD0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+         │            │            └ <function collapse_excgroups at 0x0000020A7329F4C0>
+         │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+         └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+    │    │   │     └ ExceptionGroup('unhandled errors in a TaskGroup', [AttributeError("'PlayerService' object has no attribute '_calculate_cumula...
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object collapse_excgroups at 0x0000020A75558D40>
+    └ <contextlib._GeneratorContextManager object at 0x0000020A75F5BDD0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_utils.py", line 83, in collapse_excgroups
+    raise exc
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    response = await self.dispatch_func(request, call_next)
+                     │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x0000020A75E9F2E0>
+                     │    │             └ <starlette.middleware.base._CachedRequest object at 0x0000020A75F59B80>
+                     │    └ <bound method RequestLoggingMiddleware.dispatch of <app.main.RequestLoggingMiddleware object at 0x0000020A755D7D40>>
+                     └ <app.main.RequestLoggingMiddleware object at 0x0000020A755D7D40>
+
+  File "C:\Usman\Projects\fantasy-league\app\main.py", line 154, in dispatch
+    response: Response = await call_next(request)
+                               │         └ <starlette.middleware.base._CachedRequest object at 0x0000020A75F59B80>
+                               └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x0000020A75E9F2E0>
+
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+          └ AttributeError("'PlayerService' object has no attribute '_calculate_cumulative_points'")
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+          │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x0000020A75FCE8E0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x0000020A755D7D10>
+          └ <app.main.RequestLoggingMiddleware object at 0x0000020A755D7D40>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    await responder(scope, receive, send)
+          │         │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x0000020A75FCE8E0>
+          │         │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x0000020A75FCE8E0>
+                           │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    await self.app(scope, receive, self.send_with_compression)
+          │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x0000020A73478860>
+          │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.cors.CORSMiddleware object at 0x0000020A755D7CE0>
+          └ <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x0000020A755D7CB0>
+          └ <starlette.middleware.cors.CORSMiddleware object at 0x0000020A755D7CE0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x0000020A734A40B0>>
+          │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x0000020A75F63410>
+          │                            │    └ <fastapi.routing.APIRouter object at 0x0000020A75583C80>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x0000020A755D7CB0>
+          └ <function wrap_app_handling_exceptions at 0x0000020A733BA160>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+          │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <fastapi.routing.APIRouter object at 0x0000020A75583C80>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+          │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x0000020A75583C80>>
+          └ <fastapi.routing.APIRouter object at 0x0000020A75583C80>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+          │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │     └ <function Route.handle at 0x0000020A733BB740>
+          └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <function request_response.<locals>.app at 0x0000020A7558F740>
+          └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE0C0>
+          │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x0000020A75F62510>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x0000020A75FCE160>
+          └ <function wrap_app_handling_exceptions at 0x0000020A733BA160>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000020A75FCE2A0>
+          │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x0000020A75FCE840>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x0000020A75FCE160>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x0000020A75F62510>
+                     └ <function get_request_handler.<locals>.app at 0x0000020A7558F880>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 302, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x0000020A733B9B20>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 215, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+                 │                 │         │       └ {'session': <sqlmodel.orm.session.Session object at 0x0000020A75F58260>, 'gw_id': None, 'team_id': None, 'position_id': None,...
+                 │                 │         └ <function players_stats at 0x0000020A7558CF40>
+                 │                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(None), name='gw_id', mode='validation'), ModelField(field...
+                 └ <function run_in_threadpool at 0x0000020A73167E20>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\concurrency.py", line 38, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+                 │     │         │        └ functools.partial(<function players_stats at 0x0000020A7558CF40>, session=<sqlmodel.orm.session.Session object at 0x0000020A7...
+                 │     │         └ <function run_sync at 0x0000020A7230B920>
+                 │     └ <module 'anyio.to_thread' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\to_thread.py'>
+                 └ <module 'anyio' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+                 └ <function get_async_backend at 0x0000020A72308CC0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2476, in run_sync_in_worker_thread
+    return await future
+                 └ <Future finished exception=AttributeError("'PlayerService' object has no attribute '_calculate_cumulative_points'")>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+
+  File "C:\Usman\Projects\fantasy-league\app\player\routes.py", line 39, in players_stats
+    data, total = svc.players_stats(gw_id, team_id, position_id, sort, page, page_size)
+                  │   │             │      │        │            │     │     └ 20
+                  │   │             │      │        │            │     └ 1
+                  │   │             │      │        │            └ 'cumulative_points'
+                  │   │             │      │        └ None
+                  │   │             │      └ None
+                  │   │             └ None
+                  │   └ <function PlayerService.players_stats at 0x0000020A7558CEA0>
+                  └ <app.player.service.PlayerService object at 0x0000020A75F615E0>
+
+  File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 213, in players_stats
+    rows = sorted(rows, key=sort_key, reverse=True)
+                  │         └ <function PlayerService.players_stats.<locals>.sort_key at 0x0000020A75FDD300>
+                  └ [(PlayerStat(total_points=19, player_id=1, assists=1, goals_scored=2, red_cards=0, bonus_points=2, created_at=datetime.dateti...
+
+  File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 211, in sort_key
+    return float(self._calculate_cumulative_points(p.player_id, current_gw))
+                 │                                 │ │          └ 3
+                 │                                 │ └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x0000020A75311080>
+                 │                                 └ Player(player_firstname='James', player_fullname='James Santos', team_id=1, position_id=1, is_active=True, player_lastname='S...
+                 └ <app.player.service.PlayerService object at 0x0000020A75F615E0>
+
+AttributeError: 'PlayerService' object has no attribute '_calculate_cumulative_points'
+2025-08-22 11:38:31.131 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:38:31.253 | ERROR    | app.main:unhandled_exception_handler:137 - Unhandled error on GET http://127.0.0.1:8000/api/v1/players/stats?sort=cumulative_points&page=1&page_size=20: is_active
+  + Exception Group Traceback (most recent call last):
+  |
+  |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_utils.py", line 77, in collapse_excgroups
+  |     yield
+  |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 183, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                │     │                      └ <anyio._backends._asyncio.TaskGroup object at 0x00000276639E8BF0>
+  |                │     └ <function create_task_group at 0x000002765FDFB2E0>
+  |                └ <module 'anyio' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+  |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  |
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |           │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000002765FEAE8E0>
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000027...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <app.main.RequestLoggingMiddleware object at 0x000002766305FA10>
+    |           └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002766305FAA0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |          │            │            └ <function collapse_excgroups at 0x0000027660D0F4C0>
+    |          │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+    |          └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+    |   File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |     │    │   │     └ ExceptionGroup('unhandled errors in a TaskGroup', [AttributeError('is_active')])
+    |     │    │   └ <method 'throw' of 'generator' objects>
+    |     │    └ <generator object collapse_excgroups at 0x0000027662FD8C70>
+    |     └ <contextlib._GeneratorContextManager object at 0x00000276639EBF20>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_utils.py", line 83, in collapse_excgroups
+    |     raise exc
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                      │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000002766392F1A0>
+    |                      │    │             └ <starlette.middleware.base._CachedRequest object at 0x00000276639E8890>
+    |                      │    └ <bound method RequestLoggingMiddleware.dispatch of <app.main.RequestLoggingMiddleware object at 0x000002766305FA10>>
+    |                      └ <app.main.RequestLoggingMiddleware object at 0x000002766305FA10>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\main.py", line 154, in dispatch
+    |     response: Response = await call_next(request)
+    |                                │         └ <starlette.middleware.base._CachedRequest object at 0x00000276639E8890>
+    |                                └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000002766392F1A0>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    |     raise app_exc
+    |           └ AttributeError('is_active')
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |           │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000276639E79C0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x000002766305F9E0>
+    |           └ <app.main.RequestLoggingMiddleware object at 0x000002766305FA10>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    |     await responder(scope, receive, send)
+    |           │         │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000276639E79C0>
+    |           │         │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    |     await super().__call__(scope, receive, send)
+    |                            │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000276639E79C0>
+    |                            │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |                            └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    |     await self.app(scope, receive, self.send_with_compression)
+    |           │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x0000027660EE8860>
+    |           │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.cors.CORSMiddleware object at 0x000002766305F9B0>
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002766305F8F0>
+    |           └ <starlette.middleware.cors.CORSMiddleware object at 0x000002766305F9B0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |           │                            │    │    │     │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>>
+    |           │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    │    └ <starlette.requests.Request object at 0x000002766390F770>
+    |           │                            │    └ <fastapi.routing.APIRouter object at 0x000002766300BAA0>
+    |           │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002766305F8F0>
+    |           └ <function wrap_app_handling_exceptions at 0x0000027660E2A160>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |           │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+    |           │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <fastapi.routing.APIRouter object at 0x000002766300BAA0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |           │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+    |           │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000002766300BAA0>>
+    |           └ <fastapi.routing.APIRouter object at 0x000002766300BAA0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    |     await route.handle(scope, receive, send)
+    |           │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+    |           │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │     └ <function Route.handle at 0x0000027660E2B740>
+    |           └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <function request_response.<locals>.app at 0x000002766300F560>
+    |           └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 78, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |           │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+    |           │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    └ <starlette.requests.Request object at 0x0000027663946EA0>
+    |           │                            └ <function request_response.<locals>.app.<locals>.app at 0x0000027663A56340>
+    |           └ <function wrap_app_handling_exceptions at 0x0000027660E2A160>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |           │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A56480>
+    |           │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+    |           │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <function request_response.<locals>.app.<locals>.app at 0x0000027663A56340>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 75, in app
+    |     response = await f(request)
+    |                      │ └ <starlette.requests.Request object at 0x0000027663946EA0>
+    |                      └ <function get_request_handler.<locals>.app at 0x000002766300F6A0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 302, in app
+    |     raw_response = await run_endpoint_function(
+    |                          └ <function run_endpoint_function at 0x0000027660E29B20>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 215, in run_endpoint_function
+    |     return await run_in_threadpool(dependant.call, **values)
+    |                  │                 │         │       └ {'session': <sqlmodel.orm.session.Session object at 0x00000276639EFA70>, 'gw_id': None, 'team_id': None, 'position_id': None,...
+    |                  │                 │         └ <function players_stats at 0x000002766300CCC0>
+    |                  │                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(None), name='gw_id', mode='validation'), ModelField(field...
+    |                  └ <function run_in_threadpool at 0x0000027660BD7E20>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\concurrency.py", line 38, in run_in_threadpool
+    |     return await anyio.to_thread.run_sync(func)
+    |                  │     │         │        └ functools.partial(<function players_stats at 0x000002766300CCC0>, session=<sqlmodel.orm.session.Session object at 0x000002766...
+    |                  │     │         └ <function run_sync at 0x000002765FD6B920>
+    |                  │     └ <module 'anyio.to_thread' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\to_thread.py'>
+    |                  └ <module 'anyio' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    |     return await get_async_backend().run_sync_in_worker_thread(
+    |                  └ <function get_async_backend at 0x000002765FD68CC0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2476, in run_sync_in_worker_thread
+    |     return await future
+    |                  └ <Future finished exception=AttributeError('is_active')>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 967, in run
+    |     result = context.run(func, *args)
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\player\routes.py", line 39, in players_stats
+    |     data, total = svc.players_stats(gw_id, team_id, position_id, sort, page, page_size)
+    |                   │   │             │      │        │            │     │     └ 20
+    |                   │   │             │      │        │            │     └ 1
+    |                   │   │             │      │        │            └ 'cumulative_points'
+    |                   │   │             │      │        └ None
+    |                   │   │             │      └ None
+    |                   │   │             └ None
+    |                   │   └ <function PlayerService.players_stats at 0x000002766300CB80>
+    |                   └ <app.player.service.PlayerService object at 0x0000027663071C40>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 262, in players_stats
+    |     "selection_percentage": self._get_selection_percentage(p.player_id, ps.gw_id)
+    |                             │    └ <function PlayerService._get_selection_percentage at 0x000002766300CAE0>
+    |                             └ <app.player.service.PlayerService object at 0x0000027663071C40>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 188, in _get_selection_percentage
+    |     .where(Manager.is_active == True)  # noqa: E712
+    |            └ <class 'app.db_models.Manager'>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\pydantic\_internal\_model_construction.py", line 271, in __getattr__
+    |     raise AttributeError(item)
+    |                          └ 'is_active'
+    |
+    | AttributeError: is_active
+    +------------------------------------
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 384
+               │     └ 3
+               └ <function _main at 0x000002765D9774C0>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 384
+           │    └ <function BaseProcess._bootstrap at 0x000002765D870FE0>
+           └ <SpawnProcess name='SpawnProcess-5' parent=30980 started>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\process.py", line 314, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x000002765D870540>
+    └ <SpawnProcess name='SpawnProcess-5' parent=30980 started>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x000002765D92F3B0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-5' parent=30980 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-5' parent=30980 started>
+    │    └ <function subprocess_started at 0x000002765FD3A160>
+    └ <SpawnProcess name='SpawnProcess-5' parent=30980 started>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=464, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x000002765FEA9B80>>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\server.py", line 67, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           │       │   │    │             └ [<socket.socket fd=464, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+           │       │   │    └ <function Server.serve at 0x000002765FD394E0>
+           │       │   └ <uvicorn.server.Server object at 0x000002765FEA9B80>
+           │       └ <function run at 0x000002765F5B5C60>
+           └ <module 'asyncio' from 'C:\\Users\\ufawa\\AppData\\Roaming\\uv\\python\\cpython-3.12.11-windows-x86_64-none\\Lib\\asyncio\\__...
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000002765FE76EA0>
+           │      └ <function Runner.run at 0x000002765F6271A0>
+           └ <asyncio.runners.Runner object at 0x000002765FD4D160>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000002765F624E00>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000002765FD4D160>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 678, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000002765F624D60>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 645, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000002765F626B60>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1999, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x000002765F564EA0>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002765FDABFE0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000027663...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000027...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x00000276600760C0>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002765FDABFE0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000027663...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000027...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000027663...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000027...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002766305FAA0>
+          └ <fastapi.applications.FastAPI object at 0x00000276600760C0>
+> File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000002765FEAE8E0>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000027...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <app.main.RequestLoggingMiddleware object at 0x000002766305FA10>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002766305FAA0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+         │            │            └ <function collapse_excgroups at 0x0000027660D0F4C0>
+         │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+         └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+    │    │   │     └ ExceptionGroup('unhandled errors in a TaskGroup', [AttributeError('is_active')])
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object collapse_excgroups at 0x0000027662FD8C70>
+    └ <contextlib._GeneratorContextManager object at 0x00000276639EBF20>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_utils.py", line 83, in collapse_excgroups
+    raise exc
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    response = await self.dispatch_func(request, call_next)
+                     │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000002766392F1A0>
+                     │    │             └ <starlette.middleware.base._CachedRequest object at 0x00000276639E8890>
+                     │    └ <bound method RequestLoggingMiddleware.dispatch of <app.main.RequestLoggingMiddleware object at 0x000002766305FA10>>
+                     └ <app.main.RequestLoggingMiddleware object at 0x000002766305FA10>
+
+  File "C:\Usman\Projects\fantasy-league\app\main.py", line 154, in dispatch
+    response: Response = await call_next(request)
+                               │         └ <starlette.middleware.base._CachedRequest object at 0x00000276639E8890>
+                               └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000002766392F1A0>
+
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+          └ AttributeError('is_active')
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+          │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000276639E79C0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x000002766305F9E0>
+          └ <app.main.RequestLoggingMiddleware object at 0x000002766305FA10>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    await responder(scope, receive, send)
+          │         │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000276639E79C0>
+          │         │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x00000276639E79C0>
+                           │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    await self.app(scope, receive, self.send_with_compression)
+          │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x0000027660EE8860>
+          │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.cors.CORSMiddleware object at 0x000002766305F9B0>
+          └ <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002766305F8F0>
+          └ <starlette.middleware.cors.CORSMiddleware object at 0x000002766305F9B0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x00000276639A1B50>>
+          │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x000002766390F770>
+          │                            │    └ <fastapi.routing.APIRouter object at 0x000002766300BAA0>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002766305F8F0>
+          └ <function wrap_app_handling_exceptions at 0x0000027660E2A160>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+          │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <fastapi.routing.APIRouter object at 0x000002766300BAA0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+          │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000002766300BAA0>>
+          └ <fastapi.routing.APIRouter object at 0x000002766300BAA0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+          │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │     └ <function Route.handle at 0x0000027660E2B740>
+          └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000002766300F560>
+          └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A562A0>
+          │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x0000027663946EA0>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x0000027663A56340>
+          └ <function wrap_app_handling_exceptions at 0x0000027660E2A160>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000027663A56480>
+          │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x00000276639E4720>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x0000027663A56340>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x0000027663946EA0>
+                     └ <function get_request_handler.<locals>.app at 0x000002766300F6A0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 302, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x0000027660E29B20>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 215, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+                 │                 │         │       └ {'session': <sqlmodel.orm.session.Session object at 0x00000276639EFA70>, 'gw_id': None, 'team_id': None, 'position_id': None,...
+                 │                 │         └ <function players_stats at 0x000002766300CCC0>
+                 │                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(None), name='gw_id', mode='validation'), ModelField(field...
+                 └ <function run_in_threadpool at 0x0000027660BD7E20>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\concurrency.py", line 38, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+                 │     │         │        └ functools.partial(<function players_stats at 0x000002766300CCC0>, session=<sqlmodel.orm.session.Session object at 0x000002766...
+                 │     │         └ <function run_sync at 0x000002765FD6B920>
+                 │     └ <module 'anyio.to_thread' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\to_thread.py'>
+                 └ <module 'anyio' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+                 └ <function get_async_backend at 0x000002765FD68CC0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2476, in run_sync_in_worker_thread
+    return await future
+                 └ <Future finished exception=AttributeError('is_active')>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+
+  File "C:\Usman\Projects\fantasy-league\app\player\routes.py", line 39, in players_stats
+    data, total = svc.players_stats(gw_id, team_id, position_id, sort, page, page_size)
+                  │   │             │      │        │            │     │     └ 20
+                  │   │             │      │        │            │     └ 1
+                  │   │             │      │        │            └ 'cumulative_points'
+                  │   │             │      │        └ None
+                  │   │             │      └ None
+                  │   │             └ None
+                  │   └ <function PlayerService.players_stats at 0x000002766300CB80>
+                  └ <app.player.service.PlayerService object at 0x0000027663071C40>
+
+  File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 262, in players_stats
+    "selection_percentage": self._get_selection_percentage(p.player_id, ps.gw_id)
+                            │    └ <function PlayerService._get_selection_percentage at 0x000002766300CAE0>
+                            └ <app.player.service.PlayerService object at 0x0000027663071C40>
+
+  File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 188, in _get_selection_percentage
+    .where(Manager.is_active == True)  # noqa: E712
+           └ <class 'app.db_models.Manager'>
+
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\pydantic\_internal\_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+                         └ 'is_active'
+
+AttributeError: is_active
+2025-08-22 11:39:12.390 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:39:12.525 | ERROR    | app.main:unhandled_exception_handler:137 - Unhandled error on GET http://127.0.0.1:8000/api/v1/players/stats?sort=cumulative_points&page=1&page_size=20: 'ScalarResult' object has no attribute 'count'
+  + Exception Group Traceback (most recent call last):
+  |
+  |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_utils.py", line 77, in collapse_excgroups
+  |     yield
+  |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 183, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                │     │                      └ <anyio._backends._asyncio.TaskGroup object at 0x000001DF644D7170>
+  |                │     └ <function create_task_group at 0x000001DF6089B2E0>
+  |                └ <module 'anyio' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+  |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  |
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    |     await self.app(scope, receive, _send)
+    |           │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001DF643C16C0>
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001D...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <app.main.RequestLoggingMiddleware object at 0x000001DF63B4BD40>
+    |           └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001DF63B4BE30>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |          │            │            └ <function collapse_excgroups at 0x000001DF617AF4C0>
+    |          │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+    |          └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+    |   File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |     │    │   │     └ ExceptionGroup('unhandled errors in a TaskGroup', [AttributeError("'ScalarResult' object has no attribute 'count'")])
+    |     │    │   └ <method 'throw' of 'generator' objects>
+    |     │    └ <generator object collapse_excgroups at 0x000001DF63AC8D40>
+    |     └ <contextlib._GeneratorContextManager object at 0x000001DF6448F7A0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_utils.py", line 83, in collapse_excgroups
+    |     raise exc
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                      │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001DF6440F1A0>
+    |                      │    │             └ <starlette.middleware.base._CachedRequest object at 0x000001DF6442AAB0>
+    |                      │    └ <bound method RequestLoggingMiddleware.dispatch of <app.main.RequestLoggingMiddleware object at 0x000001DF63B4BD40>>
+    |                      └ <app.main.RequestLoggingMiddleware object at 0x000001DF63B4BD40>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\main.py", line 154, in dispatch
+    |     response: Response = await call_next(request)
+    |                                │         └ <starlette.middleware.base._CachedRequest object at 0x000001DF6442AAB0>
+    |                                └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001DF6440F1A0>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    |     raise app_exc
+    |           └ AttributeError("'ScalarResult' object has no attribute 'count'")
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |           │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001DF644CB9C0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x000001DF63B4BDA0>
+    |           └ <app.main.RequestLoggingMiddleware object at 0x000001DF63B4BD40>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    |     await responder(scope, receive, send)
+    |           │         │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001DF644CB9C0>
+    |           │         │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    |     await super().__call__(scope, receive, send)
+    |                            │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001DF644CB9C0>
+    |                            │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |                            └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    |     await self.app(scope, receive, self.send_with_compression)
+    |           │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x000001DF61988860>
+    |           │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.cors.CORSMiddleware object at 0x000001DF63B4BCE0>
+    |           └ <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001DF63B4BD10>
+    |           └ <starlette.middleware.cors.CORSMiddleware object at 0x000001DF63B4BCE0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |           │                            │    │    │     │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>>
+    |           │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    │    └ <starlette.requests.Request object at 0x000001DF6447DD00>
+    |           │                            │    └ <fastapi.routing.APIRouter object at 0x000001DF63AF7A70>
+    |           │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001DF63B4BD10>
+    |           └ <function wrap_app_handling_exceptions at 0x000001DF618CA160>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |           │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+    |           │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <fastapi.routing.APIRouter object at 0x000001DF63AF7A70>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |           │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+    |           │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000001DF63AF7A70>>
+    |           └ <fastapi.routing.APIRouter object at 0x000001DF63AF7A70>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    |     await route.handle(scope, receive, send)
+    |           │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+    |           │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │     └ <function Route.handle at 0x000001DF618CB740>
+    |           └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    |     await self.app(scope, receive, send)
+    |           │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+    |           │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <function request_response.<locals>.app at 0x000001DF63AFF880>
+    |           └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 78, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |           │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+    |           │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │                            │    └ <starlette.requests.Request object at 0x000001DF64429D60>
+    |           │                            └ <function request_response.<locals>.app.<locals>.app at 0x000001DF64536340>
+    |           └ <function wrap_app_handling_exceptions at 0x000001DF618CA160>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |           │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF64536480>
+    |           │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+    |           │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           └ <function request_response.<locals>.app.<locals>.app at 0x000001DF64536340>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 75, in app
+    |     response = await f(request)
+    |                      │ └ <starlette.requests.Request object at 0x000001DF64429D60>
+    |                      └ <function get_request_handler.<locals>.app at 0x000001DF63AFF9C0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 302, in app
+    |     raw_response = await run_endpoint_function(
+    |                          └ <function run_endpoint_function at 0x000001DF618C9B20>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 215, in run_endpoint_function
+    |     return await run_in_threadpool(dependant.call, **values)
+    |                  │                 │         │       └ {'session': <sqlmodel.orm.session.Session object at 0x000001DF6447F170>, 'gw_id': None, 'team_id': None, 'position_id': None,...
+    |                  │                 │         └ <function players_stats at 0x000001DF63AFCC20>
+    |                  │                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(None), name='gw_id', mode='validation'), ModelField(field...
+    |                  └ <function run_in_threadpool at 0x000001DF61677E20>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\concurrency.py", line 38, in run_in_threadpool
+    |     return await anyio.to_thread.run_sync(func)
+    |                  │     │         │        └ functools.partial(<function players_stats at 0x000001DF63AFCC20>, session=<sqlmodel.orm.session.Session object at 0x000001DF6...
+    |                  │     │         └ <function run_sync at 0x000001DF6080B920>
+    |                  │     └ <module 'anyio.to_thread' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\to_thread.py'>
+    |                  └ <module 'anyio' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    |     return await get_async_backend().run_sync_in_worker_thread(
+    |                  └ <function get_async_backend at 0x000001DF60808CC0>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2476, in run_sync_in_worker_thread
+    |     return await future
+    |                  └ <Future finished exception=AttributeError("'ScalarResult' object has no attribute 'count'")>
+    |   File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 967, in run
+    |     result = context.run(func, *args)
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\player\routes.py", line 39, in players_stats
+    |     data, total = svc.players_stats(gw_id, team_id, position_id, sort, page, page_size)
+    |                   │   │             │      │        │            │     │     └ 20
+    |                   │   │             │      │        │            │     └ 1
+    |                   │   │             │      │        │            └ 'cumulative_points'
+    |                   │   │             │      │        └ None
+    |                   │   │             │      └ None
+    |                   │   │             └ None
+    |                   │   └ <function PlayerService.players_stats at 0x000001DF63AFD080>
+    |                   └ <app.player.service.PlayerService object at 0x000001DF643F37A0>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 261, in players_stats
+    |     "selection_percentage": self._get_selection_percentage(p.player_id, ps.gw_id)
+    |                             │    └ <function PlayerService._get_selection_percentage at 0x000001DF63AFCFE0>
+    |                             └ <app.player.service.PlayerService object at 0x000001DF643F37A0>
+    |
+    |   File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 188, in _get_selection_percentage
+    |     ).count()
+    |
+    | AttributeError: 'ScalarResult' object has no attribute 'count'
+    +------------------------------------
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 396
+               │     └ 3
+               └ <function _main at 0x000001DF5E4074C0>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 396
+           │    └ <function BaseProcess._bootstrap at 0x000001DF5E300FE0>
+           └ <SpawnProcess name='SpawnProcess-6' parent=30980 started>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\process.py", line 314, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x000001DF5E300540>
+    └ <SpawnProcess name='SpawnProcess-6' parent=30980 started>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x000001DF5E3BF3B0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-6' parent=30980 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-6' parent=30980 started>
+    │    └ <function subprocess_started at 0x000001DF607DA160>
+    └ <SpawnProcess name='SpawnProcess-6' parent=30980 started>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=636, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x000001DF60949B80>>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\server.py", line 67, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           │       │   │    │             └ [<socket.socket fd=636, family=2, type=1, proto=6, laddr=('127.0.0.1', 8000)>]
+           │       │   │    └ <function Server.serve at 0x000001DF607D94E0>
+           │       │   └ <uvicorn.server.Server object at 0x000001DF60949B80>
+           │       └ <function run at 0x000001DF5EA45C60>
+           └ <module 'asyncio' from 'C:\\Users\\ufawa\\AppData\\Roaming\\uv\\python\\cpython-3.12.11-windows-x86_64-none\\Lib\\asyncio\\__...
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000001DF60916EA0>
+           │      └ <function Runner.run at 0x000001DF600771A0>
+           └ <asyncio.runners.Runner object at 0x000001DF607ED160>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000001DF60074E00>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000001DF607ED160>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 678, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000001DF60074D60>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 645, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000001DF60076B60>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\base_events.py", line 1999, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x000001DF5E9F4EA0>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001DF63B01400>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001DF64...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001D...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000001DF61837410>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001DF63B01400>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001DF64...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001D...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001DF64...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001D...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001DF63B4BE30>
+          └ <fastapi.applications.FastAPI object at 0x000001DF61837410>
+> File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001DF643C16C0>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001D...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <app.main.RequestLoggingMiddleware object at 0x000001DF63B4BD40>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001DF63B4BE30>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 182, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+         │            │            └ <function collapse_excgroups at 0x000001DF617AF4C0>
+         │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+         └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+  File "C:\Users\ufawa\AppData\Roaming\uv\python\cpython-3.12.11-windows-x86_64-none\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+    │    │   │     └ ExceptionGroup('unhandled errors in a TaskGroup', [AttributeError("'ScalarResult' object has no attribute 'count'")])
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object collapse_excgroups at 0x000001DF63AC8D40>
+    └ <contextlib._GeneratorContextManager object at 0x000001DF6448F7A0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_utils.py", line 83, in collapse_excgroups
+    raise exc
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 184, in __call__
+    response = await self.dispatch_func(request, call_next)
+                     │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001DF6440F1A0>
+                     │    │             └ <starlette.middleware.base._CachedRequest object at 0x000001DF6442AAB0>
+                     │    └ <bound method RequestLoggingMiddleware.dispatch of <app.main.RequestLoggingMiddleware object at 0x000001DF63B4BD40>>
+                     └ <app.main.RequestLoggingMiddleware object at 0x000001DF63B4BD40>
+
+  File "C:\Usman\Projects\fantasy-league\app\main.py", line 154, in dispatch
+    response: Response = await call_next(request)
+                               │         └ <starlette.middleware.base._CachedRequest object at 0x000001DF6442AAB0>
+                               └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001DF6440F1A0>
+
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 159, in call_next
+    raise app_exc
+          └ AttributeError("'ScalarResult' object has no attribute 'count'")
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+          │    │   │      │                      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001DF644CB9C0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.gzip.GZipMiddleware object at 0x000001DF63B4BDA0>
+          └ <app.main.RequestLoggingMiddleware object at 0x000001DF63B4BD40>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 29, in __call__
+    await responder(scope, receive, send)
+          │         │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001DF644CB9C0>
+          │         │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │         └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 130, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.send_no_error at 0x000001DF644CB9C0>
+                           │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\gzip.py", line 46, in __call__
+    await self.app(scope, receive, self.send_with_compression)
+          │    │   │      │        │    └ <function IdentityResponder.send_with_compression at 0x000001DF61988860>
+          │    │   │      │        └ <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.cors.CORSMiddleware object at 0x000001DF63B4BCE0>
+          └ <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001DF63B4BD10>
+          └ <starlette.middleware.cors.CORSMiddleware object at 0x000001DF63B4BCE0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <bound method IdentityResponder.send_with_compression of <starlette.middleware.gzip.GZipResponder object at 0x000001DF6447E8D0>>
+          │                            │    │    │     │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x000001DF6447DD00>
+          │                            │    └ <fastapi.routing.APIRouter object at 0x000001DF63AF7A70>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001DF63B4BD10>
+          └ <function wrap_app_handling_exceptions at 0x000001DF618CA160>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+          │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <fastapi.routing.APIRouter object at 0x000001DF63AF7A70>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+          │    │                │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000001DF63AF7A70>>
+          └ <fastapi.routing.APIRouter object at 0x000001DF63AF7A70>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+          │     │      │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │     └ <function Route.handle at 0x000001DF618CB740>
+          └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+          │    │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000001DF63AFF880>
+          └ APIRoute(path='/api/v1/players/stats', name='players_stats', methods=['GET'])
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF645362A0>
+          │                            │    │        │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x000001DF64429D60>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x000001DF64536340>
+          └ <function wrap_app_handling_exceptions at 0x000001DF618CA160>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001DF64536480>
+          │   │      └ <function BaseHTTPMiddleware.__call__.<locals>.call_next.<locals>.receive_or_disconnect at 0x000001DF644C8720>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x000001DF64536340>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x000001DF64429D60>
+                     └ <function get_request_handler.<locals>.app at 0x000001DF63AFF9C0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 302, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x000001DF618C9B20>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\fastapi\routing.py", line 215, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+                 │                 │         │       └ {'session': <sqlmodel.orm.session.Session object at 0x000001DF6447F170>, 'gw_id': None, 'team_id': None, 'position_id': None,...
+                 │                 │         └ <function players_stats at 0x000001DF63AFCC20>
+                 │                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(None), name='gw_id', mode='validation'), ModelField(field...
+                 └ <function run_in_threadpool at 0x000001DF61677E20>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\starlette\concurrency.py", line 38, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+                 │     │         │        └ functools.partial(<function players_stats at 0x000001DF63AFCC20>, session=<sqlmodel.orm.session.Session object at 0x000001DF6...
+                 │     │         └ <function run_sync at 0x000001DF6080B920>
+                 │     └ <module 'anyio.to_thread' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\to_thread.py'>
+                 └ <module 'anyio' from 'C:\\Usman\\Projects\\fantasy-league\\.venv\\Lib\\site-packages\\anyio\\__init__.py'>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+                 └ <function get_async_backend at 0x000001DF60808CC0>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2476, in run_sync_in_worker_thread
+    return await future
+                 └ <Future finished exception=AttributeError("'ScalarResult' object has no attribute 'count'")>
+  File "C:\Usman\Projects\fantasy-league\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+
+  File "C:\Usman\Projects\fantasy-league\app\player\routes.py", line 39, in players_stats
+    data, total = svc.players_stats(gw_id, team_id, position_id, sort, page, page_size)
+                  │   │             │      │        │            │     │     └ 20
+                  │   │             │      │        │            │     └ 1
+                  │   │             │      │        │            └ 'cumulative_points'
+                  │   │             │      │        └ None
+                  │   │             │      └ None
+                  │   │             └ None
+                  │   └ <function PlayerService.players_stats at 0x000001DF63AFD080>
+                  └ <app.player.service.PlayerService object at 0x000001DF643F37A0>
+
+  File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 261, in players_stats
+    "selection_percentage": self._get_selection_percentage(p.player_id, ps.gw_id)
+                            │    └ <function PlayerService._get_selection_percentage at 0x000001DF63AFCFE0>
+                            └ <app.player.service.PlayerService object at 0x000001DF643F37A0>
+
+  File "C:\Usman\Projects\fantasy-league\app\player\service.py", line 188, in _get_selection_percentage
+    ).count()
+
+AttributeError: 'ScalarResult' object has no attribute 'count'
+2025-08-22 11:39:58.847 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:39:59.187 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 11:40:25.365 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:40:25.392 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 11:40:40.964 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:40:40.972 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 11:40:48.917 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:40:48.928 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 11:42:48.977 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:42:48.991 | INFO     | app.main:dispatch:155 - Request completed
+2025-08-22 11:43:11.844 | INFO     | app.main:dispatch:153 - Request started
+2025-08-22 11:43:11.854 | INFO     | app.main:dispatch:155 - Request completed

@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from sqlalchemy import func
 from sqlmodel import Session, select
 
-from app.db_models import Gameweek, Player, PlayerPrice, PlayerStat, Position, Team
+from app.db_models import (Gameweek, Manager, Player, PlayerPrice, PlayerStat, 
+                          Position, Team)
 
 
 class PlayerService:
@@ -144,22 +146,81 @@ class PlayerService:
         }
 
     def get_player_stats(self, player_id: int) -> list[dict[str, Any]] | None:
+        """Get all stats for a player across all gameweeks."""
         p = self.session.get(Player, player_id)
         if not p:
             return None
+            
+        # Get all stats for this player
         stats = self.session.exec(select(PlayerStat).where(PlayerStat.player_id == player_id)).all()
+        
+        # Get player's team and position
+        team = self.session.get(Team, p.team_id)
+        position = self.session.get(Position, p.position_id)
+        
         return [
             {
+                # Basic info
                 "gw_id": s.gw_id,
-                "points": s.total_points,
-                "goals": s.goals_scored,
+                "player_name": p.player_fullname,
+                "team": team.team_name if team else None,
+                "position": position.position_name if position else None,
+                
+                # Core stats
+                "total_points": s.total_points,
+                "minutes_played": s.minutes_played,
+                "started": s.started,
+                
+                # Attacking stats
+                "goals_scored": s.goals_scored,
                 "assists": s.assists,
-                "yellow": s.yellow_cards,
-                "red": s.red_cards,
-                "minutes": s.minutes_played,
+                
+                # Defensive stats
+                "clean_sheets": s.clean_sheets,
+                
+                # Disciplinary
+                "yellow_cards": s.yellow_cards,
+                "red_cards": s.red_cards,
+                
+                # Bonus
+                "bonus_points": s.bonus_points,
+                
+                # Timestamps
+                "created_at": s.created_at.isoformat() if s.created_at else None,
+                "updated_at": s.updated_at.isoformat() if s.updated_at else None
             }
             for s in stats
         ]
+
+    def _calculate_cumulative_points(self, player_id: int, current_gw: int) -> int:
+        """Calculate total points up to the current gameweek."""
+        stats = self.session.exec(
+            select(PlayerStat)
+            .where(PlayerStat.player_id == player_id)
+            .where(PlayerStat.gw_id <= current_gw)
+        ).all()
+        return sum(stat.total_points for stat in stats)
+
+    def _get_selection_percentage(self, player_id: int, gw_id: int) -> float:
+        """Calculate selection percentage for a player in a given gameweek."""
+        price_data = self.session.exec(
+            select(PlayerPrice)
+            .where(PlayerPrice.player_id == player_id)
+            .where(PlayerPrice.gw_id == gw_id)
+        ).first()
+        
+        if not price_data:
+            return 0.0
+            
+        # Get total number of managers for percentage calculation
+        total_managers = self.session.exec(
+            select(func.count(Manager.manager_id))
+        ).first()
+        
+        if not total_managers:
+            return 0.0
+            
+        return (price_data.selected / total_managers) * 100 if total_managers > 0 else 0.0
 
     def players_stats(
         self,
@@ -170,6 +231,7 @@ class PlayerService:
         page: int,
         page_size: int,
     ) -> tuple[list[dict[str, Any]], int]:
+        """Get player stats with all required fields from the leaderboard spec."""
         stmt = select(PlayerStat, Player).join(Player, Player.player_id == PlayerStat.player_id)
         if gw_id is not None:
             stmt = stmt.where(PlayerStat.gw_id == gw_id)
@@ -181,38 +243,52 @@ class PlayerService:
         rows = self.session.exec(stmt).all()
         total = len(rows)
         # Sorting per spec: cumulative_points (default), gameweek_points, goals, assists, bonus_points, price
-        def sort_key(item: tuple[PlayerStat, Player]):
+        def sort_key(item: tuple[PlayerStat, Player]) -> float:
             ps, p = item
+            current_gw = gw_id or ps.gw_id
+            
             if sort == "gameweek_points":
-                return ps.total_points
+                return float(ps.total_points)
             if sort == "goals":
-                return ps.goals_scored
+                return float(ps.goals_scored)
             if sort == "assists":
-                return ps.assists
+                return float(ps.assists)
             if sort == "bonus_points":
-                return ps.bonus_points
+                return float(ps.bonus_points)
             if sort == "price":
-                # price not on PlayerStat; fallback to current price on Player
                 try:
                     return float(p.current_price)
                 except Exception:
                     return 0.0
-            # default cumulative_points: approximate with total_points here
-            return ps.total_points
+            if sort == "minutes_played":
+                return float(ps.minutes_played)
+            if sort == "clean_sheets":
+                return float(ps.clean_sheets)
+            if sort == "selection_percentage":
+                return self._get_selection_percentage(p.player_id, current_gw)
+                
+            # default: cumulative_points
+            return float(self._calculate_cumulative_points(p.player_id, current_gw))
 
         rows = sorted(rows, key=sort_key, reverse=True)
         rows = rows[(page - 1) * page_size : (page - 1) * page_size + page_size]
         data = [
             {
                 "player_id": p.player_id,
-                "name": p.player_fullname,
-                "gw_id": ps.gw_id,
-                "points": ps.total_points,
+                "fullname": p.player_fullname,
+                "team_name": self.session.get(Team, p.team_id).team_name,
+                "position_name": self.session.get(Position, p.position_id).position_name,
+                "current_price": str(p.current_price),
+                "cumulative_points": ps.total_points,  # We should calculate this across all GWs
+                "gameweek_points": ps.total_points,
                 "goals": ps.goals_scored,
                 "assists": ps.assists,
-                "yellow": ps.yellow_cards,
-                "red": ps.red_cards,
-                "minutes": ps.minutes_played,
+                "bonus_points": ps.bonus_points,
+                "yellow_cards": ps.yellow_cards,
+                "red_cards": ps.red_cards,
+                "clean_sheets": ps.clean_sheets,
+                "minutes_played": ps.minutes_played,
+                "selection_percentage": self._get_selection_percentage(p.player_id, ps.gw_id)
             }
             for (ps, p) in rows
         ]

@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -27,17 +28,20 @@ from app.player.routes import player_router
 from app.scoring.routes import scoring_router
 from app.settings import settings
 from app.team.routes import team_router
+from app.utils.db import create_db_and_tables
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     # Initialize and seed the database on startup
-#     create_db_and_tables()
-#     try:
-#         from app.scripts.seed_db import main as seed_main
-#         seed_main()
-#     except Exception as _seed_err: 
-#         logger.warning(f"Seeding skipped or failed: {_seed_err!s}")
-#     yield
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize and seed the database on startup
+    create_db_and_tables()
+    try:
+        from app.scripts.seed_db import main as seed_main
+        seed_main()
+    except Exception as _seed_err:  # pragma: no cover
+        # Seeding errors should not prevent the app from starting in dev
+        logger.warning(f"Seeding skipped or failed: {_seed_err!s}")
+    yield
 
 
 app = FastAPI(
@@ -88,7 +92,6 @@ def healthz():
 
 app.include_router(router, prefix="")
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth")
-# Deprecated user routes removed to avoid confusion with manager domain
 app.include_router(player_router, prefix=f"{settings.API_V1_PREFIX}")
 app.include_router(team_router, prefix=f"{settings.API_V1_PREFIX}")
 app.include_router(manager_router, prefix=f"{settings.API_V1_PREFIX}")

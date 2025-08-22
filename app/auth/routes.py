@@ -1,8 +1,9 @@
+from datetime import datetime
 from time import time
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, EmailStr
-from sqlmodel import Session
+from pydantic import BaseModel, EmailStr, field_validator, Field
+from sqlmodel import Session, select
 
 from app.auth.service import AuthService
 from app.db_models import Manager
@@ -22,11 +23,28 @@ class ManagerSignUp(BaseModel):
     lastname: str
     email: EmailStr
     password: str
-    birthdate: str | None = None
+    birthdate: str | None = Field(
+        default=None,
+        description="Date of birth in DD-MM-YYYY format",
+        examples=["25-12-1990"],
+        json_schema_extra={"format": "DD-MM-YYYY"}
+    )
     city: str | None = None
     fav_team: int | None = None
     fav_player: int | None = None
     squad_name: str
+
+    @field_validator('birthdate')
+    @classmethod
+    def validate_birthdate(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        try:
+            # Try to parse the date in DD-MM-YYYY format
+            datetime.strptime(v, "%d-%m-%Y")
+            return v
+        except ValueError as e:
+            raise ValueError("birthdate must be in DD-MM-YYYY format") from e
 
 
 class ManagerLogin(BaseModel):
@@ -71,7 +89,9 @@ async def login(
         _login_attempts[ip] = window
 
         auth_service = AuthService(session)
-        manager: Manager = await auth_service.authenticate_manager(user_login.email, user_login.password)
+        manager: Manager = await auth_service.authenticate_manager(
+            user_login.email, user_login.password
+        )
 
         if not manager:
             return ResponseSchema.unauthorized(
