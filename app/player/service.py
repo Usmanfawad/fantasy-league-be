@@ -1,12 +1,20 @@
 from __future__ import annotations
 
 from typing import Any
+from uuid import UUID
 
 from sqlalchemy import func
 from sqlmodel import Session, select
 
-from app.db_models import (Gameweek, Manager, Player, PlayerPrice, PlayerStat, 
-                          Position, Team)
+from app.db_models import (
+    Gameweek,
+    Manager,
+    Player,
+    PlayerPrice,
+    PlayerStat,
+    Position,
+    Team,
+)
 
 
 class PlayerService:
@@ -55,8 +63,8 @@ class PlayerService:
         ).first()
 
         # Build lookup maps for prices and stats for the latest gameweek
-        price_map: dict[int, tuple[str, int]] = {}
-        points_map: dict[int, int] = {}
+        price_map: dict[UUID, tuple[str, int]] = {}
+        points_map: dict[UUID, int] = {}
         if latest_gw_id is not None and rows:
             player_ids = [p.player_id for (p, _t, _pos) in rows]
             prices = self.session.exec(
@@ -66,7 +74,7 @@ class PlayerService:
                 )
             ).all()
             for pp in prices:
-                price_map[int(pp.player_id)] = (str(pp.price), int(pp.selected))
+                price_map[pp.player_id] = (str(pp.price), int(pp.selected))
 
             stats = self.session.exec(
                 select(PlayerStat).where(
@@ -75,16 +83,16 @@ class PlayerService:
                 )
             ).all()
             for ps in stats:
-                points_map[int(ps.player_id)] = int(ps.total_points)
+                points_map[ps.player_id] = int(ps.total_points)
 
         # Compose response
         data: list[dict[str, Any]] = []
         for (p, t, pos) in rows:
-            price, selected = price_map.get(int(p.player_id), (str(p.current_price), 0))
-            total_points = points_map.get(int(p.player_id), 0)
+            price, selected = price_map.get(p.player_id, (str(p.current_price), 0))
+            total_points = points_map.get(p.player_id, 0)
             data.append(
                 {
-                    "player_id": p.player_id,
+                    "player_id": str(p.player_id),
                     "player_fullname": p.player_fullname,
                     "position_name": pos.position_name,
                     "team_name": t.team_name,
@@ -96,7 +104,7 @@ class PlayerService:
             )
         return data, total
 
-    def get_player(self, player_id: int) -> dict[str, Any] | None:
+    def get_player(self, player_id: UUID) -> dict[str, Any] | None:
         row = self.session.exec(
             select(Player, Team, Position)
             .where(Player.player_id == player_id)
@@ -135,7 +143,7 @@ class PlayerService:
                 total_points = int(ps.total_points)
 
         return {
-            "player_id": p.player_id,
+            "player_id": str(p.player_id),
             "player_fullname": p.player_fullname,
             "position_name": pos.position_name,
             "team_name": t.team_name,
@@ -145,7 +153,7 @@ class PlayerService:
             "selected_percentage": selected,
         }
 
-    def get_player_stats(self, player_id: int) -> list[dict[str, Any]] | None:
+    def get_player_stats(self, player_id: UUID) -> list[dict[str, Any]] | None:
         """Get all stats for a player across all gameweeks."""
         p = self.session.get(Player, player_id)
         if not p:
@@ -161,7 +169,7 @@ class PlayerService:
         return [
             {
                 # Basic info
-                "gw_id": s.gw_id,
+                "gw_id": str(s.gw_id),
                 "player_name": p.player_fullname,
                 "team": team.team_name if team else None,
                 "position": position.position_name if position else None,
@@ -192,16 +200,21 @@ class PlayerService:
             for s in stats
         ]
 
-    def _calculate_cumulative_points(self, player_id: int, current_gw: int) -> int:
-        """Calculate total points up to the current gameweek."""
-        stats = self.session.exec(
-            select(PlayerStat)
-            .where(PlayerStat.player_id == player_id)
-            .where(PlayerStat.gw_id <= current_gw)
-        ).all()
+    def _calculate_cumulative_points(self, player_id: UUID, upto_gw_id: UUID | None) -> int:
+        """Calculate total points up to the specified gameweek UUID; if None, sum all."""
+        stmt = select(PlayerStat).where(PlayerStat.player_id == player_id)
+        if upto_gw_id is not None:
+            gw = self.session.get(Gameweek, upto_gw_id)
+            if gw is not None:
+                # Join to Gameweek to filter by gw_number ordering
+                from sqlalchemy import and_
+                stmt = select(PlayerStat).join(Gameweek, Gameweek.gw_id == PlayerStat.gw_id).where(
+                    and_(PlayerStat.player_id == player_id, Gameweek.gw_number <= gw.gw_number)
+                )
+        stats = self.session.exec(stmt).all()
         return sum(stat.total_points for stat in stats)
 
-    def _get_selection_percentage(self, player_id: int, gw_id: int) -> float:
+    def _get_selection_percentage(self, player_id: UUID, gw_id: UUID) -> float:
         """Calculate selection percentage for a player in a given gameweek."""
         price_data = self.session.exec(
             select(PlayerPrice)
@@ -224,7 +237,7 @@ class PlayerService:
 
     def players_stats(
         self,
-        gw_id: int | None,
+        gw_id: str | None,
         team_id: int | None,
         position_id: int | None,
         sort: str | None,
@@ -233,8 +246,14 @@ class PlayerService:
     ) -> tuple[list[dict[str, Any]], int]:
         """Get player stats with all required fields from the leaderboard spec."""
         stmt = select(PlayerStat, Player).join(Player, Player.player_id == PlayerStat.player_id)
+        gw_uuid: UUID | None = None
         if gw_id is not None:
-            stmt = stmt.where(PlayerStat.gw_id == gw_id)
+            try:
+                from uuid import UUID as _UUID
+                gw_uuid = _UUID(gw_id)
+                stmt = stmt.where(PlayerStat.gw_id == gw_uuid)
+            except Exception:
+                gw_uuid = None
         if team_id is not None:
             stmt = stmt.where(Player.team_id == team_id)
         if position_id is not None:
@@ -245,7 +264,7 @@ class PlayerService:
         # Sorting per spec: cumulative_points (default), gameweek_points, goals, assists, bonus_points, price
         def sort_key(item: tuple[PlayerStat, Player]) -> float:
             ps, p = item
-            current_gw = gw_id or ps.gw_id
+            current_gw: UUID | None = gw_uuid or ps.gw_id
             
             if sort == "gameweek_points":
                 return float(ps.total_points)
@@ -265,7 +284,7 @@ class PlayerService:
             if sort == "clean_sheets":
                 return float(ps.clean_sheets)
             if sort == "selection_percentage":
-                return self._get_selection_percentage(p.player_id, current_gw)
+                return self._get_selection_percentage(p.player_id, ps.gw_id)
                 
             # default: cumulative_points
             return float(self._calculate_cumulative_points(p.player_id, current_gw))
@@ -274,7 +293,7 @@ class PlayerService:
         rows = rows[(page - 1) * page_size : (page - 1) * page_size + page_size]
         data = [
             {
-                "player_id": p.player_id,
+                "player_id": str(p.player_id),
                 "fullname": p.player_fullname,
                 "team_name": self.session.get(Team, p.team_id).team_name,
                 "position_name": self.session.get(Position, p.position_id).position_name,

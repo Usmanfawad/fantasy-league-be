@@ -17,13 +17,13 @@ def list_upcoming_fixtures(session: Session = Depends(get_session)):
 
 
 @fixtures_router.get("/fixtures/{gameweek_id}")
-def fixtures_for_gw(gameweek_id: int, session: Session = Depends(get_session)):
+def fixtures_for_gw(gameweek_id: str, session: Session = Depends(get_session)):
     data = FixturesService(session).fixtures_for_gw(gameweek_id)
     return ResponseSchema.success(data=data)
 
 
 @fixtures_router.get("/results/{gameweek_id}")
-def results_for_gw(gameweek_id: int, session: Session = Depends(get_session)):
+def results_for_gw(gameweek_id: str, session: Session = Depends(get_session)):
     data = FixturesService(session).results_for_gw(gameweek_id)
     return ResponseSchema.success(data=data)
 
@@ -56,25 +56,26 @@ def create_gameweek(
     session.add(gw)
     session.commit()
     session.refresh(gw)
-    return ResponseSchema.success(data={"gw_id": gw.gw_id, "gw_number": gw.gw_number})
+    return ResponseSchema.success(data={"gw_id": str(gw.gw_id), "gw_number": gw.gw_number})
 
 
 @fixtures_router.put("/gameweeks/{gw_id}/activate")
-def activate_gameweek(gw_id: int, session: Session = Depends(get_session)):
+def activate_gameweek(gw_id: str, session: Session = Depends(get_session)):
     from app.db_models import Gameweek
 
     # Deactivate existing
     rows = session.exec(select(Gameweek)).all()
     for g in rows:
         if g.status == "active":
-            g.status = "completed" if g.gw_id != gw_id else g.status
+            g.status = "completed" if str(g.gw_id) != gw_id else g.status
             session.add(g)
-    gw = session.get(Gameweek, gw_id)
+    from uuid import UUID
+    gw = session.get(Gameweek, UUID(gw_id))
     if not gw:
         return ResponseSchema.not_found("Gameweek not found")
     gw.status = "active"
     session.add(gw)
     session.commit()
-    return ResponseSchema.success(message="Gameweek activated", data={"gw_id": gw.gw_id})
+    return ResponseSchema.success(message="Gameweek activated", data={"gw_id": str(gw.gw_id)})
 
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from sqlmodel import Session, select
+from uuid import UUID
 
 from app.db_models import Fixture, Gameweek
 
@@ -16,7 +17,7 @@ class FixturesService:
         return [
             {
                 "fixture_id": f.fixture_id,
-                "gw_id": f.gw_id,
+                "gw_id": str(f.gw_id),
                 "home_team_id": f.home_team_id,
                 "away_team_id": f.away_team_id,
                 "date": f.date.isoformat(),
@@ -27,12 +28,13 @@ class FixturesService:
             for (f, gw) in rows
         ]
 
-    def fixtures_for_gw(self, gameweek_id: int) -> list[dict]:
-        rows = self.session.exec(select(Fixture).where(Fixture.gw_id == gameweek_id)).all()
+    def fixtures_for_gw(self, gameweek_id: str) -> list[dict]:
+        gw = UUID(gameweek_id)
+        rows = self.session.exec(select(Fixture).where(Fixture.gw_id == gw)).all()
         return [
             {
                 "fixture_id": f.fixture_id,
-                "gw_id": f.gw_id,
+                "gw_id": str(f.gw_id),
                 "home_team_id": f.home_team_id,
                 "away_team_id": f.away_team_id,
                 "date": f.date.isoformat(),
@@ -42,8 +44,9 @@ class FixturesService:
             for f in rows
         ]
 
-    def results_for_gw(self, gameweek_id: int) -> list[dict]:
-        rows = self.session.exec(select(Fixture).where(Fixture.gw_id == gameweek_id)).all()
+    def results_for_gw(self, gameweek_id: str) -> list[dict]:
+        gw = UUID(gameweek_id)
+        rows = self.session.exec(select(Fixture).where(Fixture.gw_id == gw)).all()
         return [
             {
                 "fixture_id": f.fixture_id,

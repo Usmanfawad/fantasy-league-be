@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -16,7 +17,7 @@ security = HTTPBearer()
 
 @dataclass
 class AuthUser:
-    id: int
+    id: UUID
     role: UserRole
 
 
@@ -45,7 +46,7 @@ class AuthDependency:
                 )
 
             # Get manager from database
-            manager = session.get(Manager, int(user_id))
+            manager = session.get(Manager, UUID(user_id))
 
             if not manager:
                 raise HTTPException(

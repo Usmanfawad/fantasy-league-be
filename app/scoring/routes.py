@@ -11,7 +11,7 @@ scoring_router = APIRouter(tags=["Scoring"])
 
 
 @scoring_router.get("/scoring/{gameweek}")
-def points_for_gameweek(gameweek: int, session: Session = Depends(get_session)):
+def points_for_gameweek(gameweek: str, session: Session = Depends(get_session)):
     data = ScoringService(session).points_for_gameweek(gameweek)
     return ResponseSchema.success(data=data)
 

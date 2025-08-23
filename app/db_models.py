@@ -6,7 +6,8 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import Column
-from sqlalchemy.dialects.postgresql import JSONB, UUID as PgUUID
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.sql.sqltypes import DateTime, Numeric
 from sqlmodel import Field, SQLModel
 
@@ -24,9 +25,17 @@ class Admin(SQLModel, table=True):
 class Event(SQLModel, table=True):
     __tablename__ = "events"
 
-    event_id: int = Field(primary_key=True)
-    player_id: int = Field(foreign_key="players.player_id")
-    gw_id: int = Field(foreign_key="gameweeks.gw_id")
+    event_id: UUID = Field(
+        default_factory=uuid4,
+        sa_column=Column(
+            PGUUID(as_uuid=True),
+            primary_key=True,
+            nullable=False,
+            default=uuid4,
+        ),
+    )
+    player_id: UUID = Field(foreign_key="players.player_id")
+    gw_id: UUID = Field(foreign_key="gameweeks.gw_id")
     event_type: str
     fixture_id: int = Field(foreign_key="fixtures.fixture_id")
     minute: int
@@ -38,7 +47,7 @@ class Fixture(SQLModel, table=True):
     __tablename__ = "fixtures"
 
     fixture_id: int = Field(primary_key=True)
-    gw_id: int = Field(foreign_key="gameweeks.gw_id")
+    gw_id: UUID = Field(foreign_key="gameweeks.gw_id")
     home_team_id: int = Field(foreign_key="teams.team_id")
     away_team_id: int = Field(foreign_key="teams.team_id")
     date: datetime
@@ -51,7 +60,15 @@ class Fixture(SQLModel, table=True):
 class Gameweek(SQLModel, table=True):
     __tablename__ = "gameweeks"
 
-    gw_id: int = Field(primary_key=True)
+    gw_id: UUID = Field(
+        default_factory=uuid4,
+        sa_column=Column(
+            PGUUID(as_uuid=True),
+            primary_key=True,
+            nullable=False,
+            default=uuid4,
+        ),
+    )
     gw_number: int
     start_date: datetime | None = None
     end_date: datetime | None = None
@@ -79,8 +96,12 @@ class Manager(SQLModel, table=True):
 
     manager_id: UUID = Field(
         default_factory=uuid4,
-        primary_key=True,
-        sa_column=Column(PgUUID(as_uuid=True), primary_key=True, nullable=False)
+        sa_column=Column(
+            PGUUID(as_uuid=True),
+            primary_key=True,
+            nullable=False,
+            default=uuid4,
+        ),
     )
     mng_firstname: str
     mng_lastname: str
@@ -90,7 +111,7 @@ class Manager(SQLModel, table=True):
     birthdate: datetime | None = None
     city: str | None = None
     fav_team_id: int | None = Field(default=None, foreign_key="teams.team_id")
-    fav_player_id: int | None = Field(default=None, foreign_key="players.player_id")
+    fav_player_id: UUID | None = Field(default=None, foreign_key="players.player_id")
     created_at: datetime
     updated_at: datetime
     mng_datapoint: str
@@ -100,9 +121,9 @@ class Manager(SQLModel, table=True):
 class ManagersSquad(SQLModel, table=True):
     __tablename__ = "managers_squad"
 
-    manager_id: int = Field(primary_key=True, foreign_key="managers.manager_id")
-    player_id: int = Field(primary_key=True, foreign_key="players.player_id")
-    gw_id: int = Field(primary_key=True, foreign_key="gameweeks.gw_id")
+    manager_id: UUID = Field(primary_key=True, foreign_key="managers.manager_id")
+    player_id: UUID = Field(primary_key=True, foreign_key="players.player_id")
+    gw_id: UUID = Field(primary_key=True, foreign_key="gameweeks.gw_id")
     is_captain: bool = False
     is_vice_captain: bool = False
     is_starter: bool = False
@@ -111,8 +132,8 @@ class ManagersSquad(SQLModel, table=True):
 class PlayerPrice(SQLModel, table=True):
     __tablename__ = "player_prices"
 
-    player_id: int = Field(primary_key=True, foreign_key="players.player_id")
-    gw_id: int = Field(primary_key=True, foreign_key="gameweeks.gw_id")
+    player_id: UUID = Field(primary_key=True, foreign_key="players.player_id")
+    gw_id: UUID = Field(primary_key=True, foreign_key="gameweeks.gw_id")
     price: Decimal = Field(sa_column=Column(Numeric(5, 2), nullable=False))
     transfers_in: int
     transfers_out: int
@@ -124,8 +145,8 @@ class PlayerPrice(SQLModel, table=True):
 class PlayerStat(SQLModel, table=True):
     __tablename__ = "player_stats"
 
-    player_id: int = Field(primary_key=True, foreign_key="players.player_id")
-    gw_id: int = Field(primary_key=True, foreign_key="gameweeks.gw_id")
+    player_id: UUID = Field(primary_key=True, foreign_key="players.player_id")
+    gw_id: UUID = Field(primary_key=True, foreign_key="gameweeks.gw_id")
     total_points: int = 0
     goals_scored: int = 0
     assists: int = 0
@@ -144,7 +165,15 @@ class PlayerStat(SQLModel, table=True):
 class Player(SQLModel, table=True):
     __tablename__ = "players"
 
-    player_id: int = Field(primary_key=True)
+    player_id: UUID = Field(
+        default_factory=uuid4,
+        sa_column=Column(
+            PGUUID(as_uuid=True),
+            primary_key=True,
+            nullable=False,
+            default=uuid4,
+        ),
+    )
     player_firstname: str
     player_lastname: str
     player_fullname: str
@@ -185,11 +214,19 @@ class Team(SQLModel, table=True):
 class Transfer(SQLModel, table=True):
     __tablename__ = "transfers"
 
-    transfer_id: int = Field(primary_key=True)
+    transfer_id: UUID = Field(
+        default_factory=uuid4,
+        sa_column=Column(
+            PGUUID(as_uuid=True),
+            primary_key=True,
+            nullable=False,
+            default=uuid4,
+        ),
+    )
     manager_id: UUID = Field(foreign_key="managers.manager_id")
-    player_in_id: int = Field(foreign_key="players.player_id")
-    player_out_id: int = Field(foreign_key="players.player_id")
-    gw_id: int = Field(foreign_key="gameweeks.gw_id")
+    player_in_id: UUID = Field(foreign_key="players.player_id")
+    player_out_id: UUID = Field(foreign_key="players.player_id")
+    gw_id: UUID = Field(foreign_key="gameweeks.gw_id")
     transfer_time: datetime = Field(
         sa_column=Column(DateTime(timezone=False), nullable=False)
     )

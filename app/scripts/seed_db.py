@@ -89,7 +89,6 @@ def seed_players(
             current = initial + Decimal(random.randrange(-10, 15)) / Decimal(10)
             players.append(
                 Player(
-                    player_id=len(players) + 1,
                     player_firstname=first,
                     player_lastname=last,
                     player_fullname=f"{first} {last}",
@@ -117,11 +116,10 @@ def seed_gameweeks(session: Session, count: int = 3) -> list[Gameweek]:
         end = start + timedelta(days=6)
         gws.append(
             Gameweek(
-                gw_id=i,
                 gw_number=i,
                 start_date=start.replace(tzinfo=None),
                 end_date=end.replace(tzinfo=None),
-                status="Ongoing" if i == 1 else "Upcoming",
+                status="active" if i == 1 else "Upcoming",
                 created_at=datetime.now(UTC).replace(tzinfo=None),
                 updated_at=datetime.now(UTC).replace(tzinfo=None),
             )
@@ -291,7 +289,6 @@ def seed_transfers(session: Session, managers: list[Manager], players: list[Play
         gw = random.choice(gws)
         session.add(
             Transfer(
-                transfer_id=None,
                 manager_id=manager.manager_id,
                 player_in_id=player_in.player_id,
                 player_out_id=player_out.player_id,

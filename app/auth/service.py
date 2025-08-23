@@ -1,8 +1,8 @@
 from datetime import UTC, datetime, timedelta
-from uuid import UUID
 
 import bcrypt
 from fastapi import HTTPException, status
+from uuid import UUID as UUIDType
 from jose import jwt
 from sqlmodel import Session, select
 
@@ -59,9 +59,18 @@ class AuthService:
         fav_team_id = payload.get("fav_team")
         if fav_team_id is not None and not session.get(Team, fav_team_id):
             fav_team_id = None
-        fav_player_id = payload.get("fav_player")
-        if fav_player_id is not None and not session.get(Player, fav_player_id):
-            fav_player_id = None
+
+        # Handle fav_player which is now a UUID PK.
+        # Treat 0/"0"/None/empty as no favorite, otherwise try to coerce to UUID and validate existence.
+        fav_player_raw = payload.get("fav_player")
+        fav_player_id = None
+        if fav_player_raw not in (None, 0, "0", "", "null"):
+            try:
+                fav_player_uuid = UUIDType(str(fav_player_raw))
+                if session.get(Player, fav_player_uuid):
+                    fav_player_id = fav_player_uuid
+            except (ValueError, TypeError):
+                fav_player_id = None
 
         # Parse birthdate if provided
         bd_raw = payload.get("birthdate")

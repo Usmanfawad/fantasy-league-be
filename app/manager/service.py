@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from typing import Any
+from uuid import UUID
 
 from sqlalchemy import delete, update
 from sqlmodel import Session, select
@@ -21,7 +22,7 @@ class ManagerService:
     def __init__(self, session: Session):
         self.session = session
 
-    def _validate_position_quotas(self, player_ids: list[int]) -> tuple[bool, str]:
+    def _validate_position_quotas(self, player_ids: list[UUID]) -> tuple[bool, str]:
         """Validate position quotas for a list of player IDs.
         Returns (is_valid, error_message)"""
         rows = self.session.exec(
@@ -45,9 +46,15 @@ class ManagerService:
         return True, "OK"
 
     def get_active_gameweek(self) -> Gameweek | None:
-        return self.session.exec(select(Gameweek).where(Gameweek.status == "active")).first()
+        # Latest active-like gameweek (treat legacy statuses as active)
+        return self.session.exec(
+            select(Gameweek)
+            .where(Gameweek.status.in_(["active", "Ongoing", "open"]))
+            .order_by(Gameweek.gw_number.desc())
+            .limit(1)
+        ).first()
 
-    def validate_and_save_squad(self, manager_id: int, players_payload: list[dict[str, Any]], gw_id: int | None) -> str:
+    def validate_and_save_squad(self, manager_id: UUID, players_payload: list[dict[str, Any]], gw_id: UUID | None) -> str:
         gw = self.session.get(Gameweek, gw_id) if gw_id is not None else None
         if gw is None:
             gw = self.get_active_gameweek()
@@ -57,7 +64,7 @@ class ManagerService:
         if len(players_payload) != 15:
             return "Squad must contain exactly 15 players (11 starters and 4 substitutes)"
 
-        player_ids = [p["player_id"] for p in players_payload]
+        player_ids: list[UUID] = [p["player_id"] for p in players_payload]
         rows = self.session.exec(
             select(Player, Team).where(Player.player_id.in_(player_ids)).join(
                 Team, Team.team_id == Player.team_id
@@ -89,7 +96,8 @@ class ManagerService:
         # Replace existing squad
         self.session.exec(
             delete(ManagersSquad).where(
-                (ManagersSquad.manager_id == manager_id) & (ManagersSquad.gw_id == gw.gw_id)
+                (ManagersSquad.manager_id == manager_id) & 
+                (ManagersSquad.gw_id == gw.gw_id)
             )
         )
         for p in players_payload:
@@ -106,7 +114,7 @@ class ManagerService:
         self.session.commit()
         return "OK"
 
-    def get_squad(self, manager_id: int) -> tuple[str | None, list[dict[str, Any]]]:
+    def get_squad(self, manager_id: UUID) -> tuple[str | None, list[dict[str, Any]]]:
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek", []
@@ -118,7 +126,7 @@ class ManagerService:
         ).all()
         data = [
             {
-                "player_id": player.player_id,
+                "player_id": str(player.player_id),
                 "name": player.player_fullname,
                 "position_id": player.position_id,
                 "team_id": player.team_id,
@@ -130,7 +138,7 @@ class ManagerService:
         ]
         return None, data
 
-    def overview(self, manager_id: int) -> tuple[str | None, dict[str, Any]]:
+    def overview(self, manager_id: UUID) -> tuple[str | None, dict[str, Any]]:
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek", {}
@@ -145,8 +153,8 @@ class ManagerService:
         total_points = sum(ps.total_points for (_, ps) in rows)
         details = [
             {
-                "player_id": ps.player_id,
-                "gw_id": ps.gw_id,
+                "player_id": str(ps.player_id),
+                "gw_id": str(ps.gw_id),
                 "points": ps.total_points,
                 "goals": ps.goals_scored,
                 "assists": ps.assists,
@@ -168,13 +176,13 @@ class ManagerService:
             ))
             .where(ManagersSquad.gw_id == gw.gw_id)
         ).all()
-        totals: dict[int, int] = defaultdict(int)
-        names: dict[int, str] = {}
+        totals: dict[UUID, int] = defaultdict(int)
+        names: dict[UUID, str] = {}
         for mid, name, pts in rows:
             totals[mid] += pts
             names[mid] = name
         items = sorted(
-            ({"manager_id": mid, "squad_name": names[mid], "points": pts} 
+            ({"manager_id": str(mid), "squad_name": names[mid], "points": pts} 
             for mid, pts in totals.items()),
             key=lambda i: i["points"],
             reverse=True,
@@ -184,7 +192,7 @@ class ManagerService:
         end = start + page_size
         return items[start:end], total
 
-    def make_transfer(self, manager_id: int, player_out_id: int, player_in_id: int, gw_id: int | None) -> str:
+    def make_transfer(self, manager_id: UUID, player_out_id: UUID, player_in_id: UUID, gw_id: UUID | None) -> str:
         gw = self.session.get(Gameweek, gw_id) if gw_id is not None else None
         if gw is None:
             gw = self.get_active_gameweek()
@@ -223,7 +231,6 @@ class ManagerService:
 
         self.session.add(
             Transfer(
-                transfer_id=None,
                 manager_id=manager_id,
                 player_in_id=player_in_id,
                 player_out_id=player_out_id,
@@ -242,7 +249,7 @@ class ManagerService:
         self.session.commit()
         return "OK"
 
-    def substitute(self, manager_id: int, player_out_id: int, player_in_id: int) -> str:
+    def substitute(self, manager_id: UUID, player_out_id: UUID, player_in_id: UUID) -> str:
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek"
@@ -300,7 +307,7 @@ class ManagerService:
         self.session.commit()
         return "OK"
 
-    def update_transfer(self, manager_id: int, transfer_id: int, player_out_id: int, player_in_id: int) -> str:
+    def update_transfer(self, manager_id: UUID, transfer_id: UUID, player_out_id: UUID, player_in_id: UUID) -> str:
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek"

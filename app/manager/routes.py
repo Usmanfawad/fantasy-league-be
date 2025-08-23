@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
 
 from app.dependencies import ManagerUser
+from uuid import UUID
 from app.manager.schemas import SquadSaveRequest, TransferRequest
 from app.manager.service import ManagerService
 from app.user.models import UserRole
@@ -19,17 +20,18 @@ def _svc(session: Session) -> ManagerService:
 
 @manager_router.post("/{manager_id}/squad")
 def save_squad(
-    manager_id: int,
+    manager_id: str,
     body: SquadSaveRequest,
     user: ManagerUser,
     session: Session = Depends(get_session),
 ):
-    if user.id != manager_id and user.role != UserRole.ADMIN:
+    mid = UUID(manager_id)
+    if user.id != mid and user.role != UserRole.ADMIN:
         return ResponseSchema.forbidden("Cannot modify another manager's squad")
 
     svc = _svc(session)
     result = svc.validate_and_save_squad(
-        manager_id,
+        mid,
         [p.model_dump() for p in (body.players or [])],
         body.gw_id,
     )
@@ -40,15 +42,16 @@ def save_squad(
 
 @manager_router.get("/{manager_id}/squad")
 def get_squad(
-    manager_id: int,
+    manager_id: str,
     user: ManagerUser,
     session: Session = Depends(get_session),
 ):
-    if user.id != manager_id and user.role != UserRole.ADMIN:
+    mid = UUID(manager_id)
+    if user.id != mid and user.role != UserRole.ADMIN:
         return ResponseSchema.forbidden("Cannot view another manager's squad")
 
     svc = _svc(session)
-    err, data = svc.get_squad(manager_id)
+    err, data = svc.get_squad(mid)
     if err:
         return ResponseSchema.bad_request(err)
     return ResponseSchema.success(data=data)
@@ -56,7 +59,7 @@ def get_squad(
 
 @manager_router.put("/{manager_id}/squad")
 def update_squad(
-    manager_id: int,
+    manager_id: str,
     body: SquadSaveRequest,
     user: ManagerUser,
     session: Session = Depends(get_session),
@@ -67,15 +70,16 @@ def update_squad(
 
 @manager_router.get("/{manager_id}/overview")
 def manager_overview(
-    manager_id: int,
+    manager_id: str,
     user: ManagerUser,
     session: Session = Depends(get_session),
 ):
-    if user.id != manager_id and user.role != UserRole.ADMIN:
+    mid = UUID(manager_id)
+    if user.id != mid and user.role != UserRole.ADMIN:
         return ResponseSchema.forbidden("Cannot view another manager's overview")
 
     svc = _svc(session)
-    err, data = svc.overview(manager_id)
+    err, data = svc.overview(mid)
     if err:
         return ResponseSchema.bad_request(err)
     return ResponseSchema.success(data=data)
@@ -94,16 +98,17 @@ def leaderboard(
 
 @manager_router.post("/{manager_id}/transfers")
 def make_transfer(
-    manager_id: int,
+    manager_id: str,
     body: TransferRequest,
     user: ManagerUser,
     session: Session = Depends(get_session),
 ):
-    if user.id != manager_id and user.role != UserRole.ADMIN:
+    mid = UUID(manager_id)
+    if user.id != mid and user.role != UserRole.ADMIN:
         return ResponseSchema.forbidden("Cannot transfer for another manager")
 
     svc = _svc(session)
-    result = svc.make_transfer(manager_id, body.player_out_id, body.player_in_id, body.gw_id)
+    result = svc.make_transfer(mid, body.player_out_id, body.player_in_id, body.gw_id)
     if result == "OK":
         return ResponseSchema.success(message="Transfer completed with 4-point penalty")
     return ResponseSchema.bad_request(result)
@@ -111,17 +116,21 @@ def make_transfer(
 
 @manager_router.post("/{manager_id}/substitute")
 def substitute_player(
-    manager_id: int,
-    player_out_id: int,
-    player_in_id: int,
+    manager_id: str,
+    player_out_id: str,
+    player_in_id: str,
     user: ManagerUser,
     session: Session = Depends(get_session),
 ):
-    if user.id != manager_id and user.role != UserRole.ADMIN:
+    mid = UUID(manager_id)
+    from uuid import UUID as _UUID
+    pid_out = _UUID(player_out_id)
+    pid_in = _UUID(player_in_id)
+    if user.id != mid and user.role != UserRole.ADMIN:
         return ResponseSchema.forbidden("Cannot substitute for another manager")
 
     svc = _svc(session)
-    result = svc.substitute(manager_id, player_out_id, player_in_id)
+    result = svc.substitute(mid, pid_out, pid_in)
     if result == "OK":
         return ResponseSchema.success(message="Substitution applied")
     return ResponseSchema.bad_request(result)
@@ -129,17 +138,20 @@ def substitute_player(
 
 @manager_router.put("/{manager_id}/transfers/{transfer_id}")
 def update_transfer(
-    manager_id: int,
-    transfer_id: int,
+    manager_id: str,
+    transfer_id: str,
     body: TransferRequest,
     user: ManagerUser,
     session: Session = Depends(get_session),
 ):
-    if user.id != manager_id and user.role != UserRole.ADMIN:
+    mid = UUID(manager_id)
+    from uuid import UUID as _UUID
+    tid = _UUID(transfer_id)
+    if user.id != mid and user.role != UserRole.ADMIN:
         return ResponseSchema.forbidden("Cannot modify another manager's transfer")
 
     svc = _svc(session)
-    result = svc.update_transfer(manager_id, transfer_id, body.player_out_id, body.player_in_id)
+    result = svc.update_transfer(mid, tid, body.player_out_id, body.player_in_id)
     if result == "OK":
         return ResponseSchema.success(message="Transfer updated")
     if result == "Transfer not found":

@@ -2,7 +2,7 @@ from datetime import datetime
 from time import time
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, EmailStr, field_validator, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from sqlmodel import Session, select
 
 from app.auth.service import AuthService
@@ -31,7 +31,7 @@ class ManagerSignUp(BaseModel):
     )
     city: str | None = None
     fav_team: int | None = None
-    fav_player: int | None = None
+    fav_player: str | None = None
     squad_name: str
 
     @field_validator('birthdate')
@@ -57,7 +57,7 @@ async def register(manager: ManagerSignUp, session: Session = Depends(get_sessio
     try:
         created = await AuthService.create_manager(session, manager.model_dump())
         return ResponseSchema.success(
-            data={"manager_id": created.manager_id},
+            data={"manager_id": str(created.manager_id)},
             message="Account created successfully",
         )
     except HTTPException as e:
@@ -111,7 +111,7 @@ async def login(
             data={
                 "access_token": access_token,
                 "token_type": "bearer",
-                "manager_id": manager.manager_id,
+                "manager_id": str(manager.manager_id),
                 "squad_name": manager.squad_name,
             },
             message="Login successful",
@@ -131,7 +131,7 @@ async def read_managers_me(current_user: CurrentUser, session: Session = Depends
         return ResponseSchema.not_found("Manager not found")
     return ResponseSchema.success(
         data={
-            "manager_id": mgr.manager_id,
+            "manager_id": str(mgr.manager_id),
             "email": mgr.email,
             "squad_name": mgr.squad_name,
             "firstname": mgr.mng_firstname,
@@ -145,6 +145,6 @@ async def read_managers_me(current_user: CurrentUser, session: Session = Depends
 async def get_managers(session: Session = Depends(get_session)):
     rows = session.exec(select(Manager)).all()
     return ResponseSchema.success(
-        data=[{"manager_id": m.manager_id, "email": m.email, "squad_name": m.squad_name} for m in rows]
+        data=[{"manager_id": str(m.manager_id), "email": m.email, "squad_name": m.squad_name} for m in rows]
     )
 
