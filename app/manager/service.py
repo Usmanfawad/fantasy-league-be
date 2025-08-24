@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
@@ -10,8 +11,10 @@ from sqlmodel import Session, select
 from app.db_models import (
     Gameweek,
     Manager,
+    ManagerGameweekState,
     ManagersSquad,
     Player,
+    PlayerPrice,
     PlayerStat,
     Team,
     Transfer,
@@ -22,7 +25,7 @@ class ManagerService:
     def __init__(self, session: Session):
         self.session = session
 
-    def _validate_position_quotas(self, player_ids: list[UUID]) -> tuple[bool, str]:
+    def _validate_position_quotas(self, player_ids: list[int]) -> tuple[bool, str]:
         """Validate position quotas for a list of player IDs.
         Returns (is_valid, error_message)"""
         rows = self.session.exec(
@@ -54,7 +57,7 @@ class ManagerService:
             .limit(1)
         ).first()
 
-    def validate_and_save_squad(self, manager_id: UUID, players_payload: list[dict[str, Any]], gw_id: UUID | None) -> str:
+    def validate_and_save_squad(self, manager_id: UUID, players_payload: list[dict[str, Any]], gw_id: int | None) -> str:
         gw = self.session.get(Gameweek, gw_id) if gw_id is not None else None
         if gw is None:
             gw = self.get_active_gameweek()
@@ -64,7 +67,7 @@ class ManagerService:
         if len(players_payload) != 15:
             return "Squad must contain exactly 15 players (11 starters and 4 substitutes)"
 
-        player_ids: list[UUID] = [p["player_id"] for p in players_payload]
+        player_ids: list[int] = [p["player_id"] for p in players_payload]
         rows = self.session.exec(
             select(Player, Team).where(Player.player_id.in_(player_ids)).join(
                 Team, Team.team_id == Player.team_id
@@ -192,7 +195,7 @@ class ManagerService:
         end = start + page_size
         return items[start:end], total
 
-    def make_transfer(self, manager_id: UUID, player_out_id: UUID, player_in_id: UUID, gw_id: UUID | None) -> str:
+    def make_transfer(self, manager_id: UUID, player_out_id: int, player_in_id: int, gw_id: int | None) -> str:
         gw = self.session.get(Gameweek, gw_id) if gw_id is not None else None
         if gw is None:
             gw = self.get_active_gameweek()
@@ -220,15 +223,92 @@ class ManagerService:
         if not is_valid:
             return error_msg
 
+        # Ensure manager exists
         manager = self.session.get(Manager, manager_id)
         if not manager:
             return "Manager not found"
-        penalty = 4
-        if manager.wallet < penalty:
-            return "Insufficient wallet for penalty"
-        manager.wallet -= penalty
-        self.session.add(manager)
 
+        # Ensure gameweek state exists (carry over free transfers up to 2; carry budget)
+        state = self.session.exec(
+            select(ManagerGameweekState)
+            .where(ManagerGameweekState.manager_id == manager_id)
+            .where(ManagerGameweekState.gw_id == gw.gw_id)
+        ).first()
+        if state is None:
+            # Determine previous gw state for carry over
+            prev_gw = self.session.exec(
+                select(Gameweek).where(Gameweek.gw_number == gw.gw_number - 1)
+            ).first()
+            prev_state = None
+            if prev_gw is not None:
+                prev_state = self.session.exec(
+                    select(ManagerGameweekState)
+                    .where(ManagerGameweekState.manager_id == manager_id)
+                    .where(ManagerGameweekState.gw_id == prev_gw.gw_id)
+                ).first()
+            free_transfers = 1 if prev_state is None else min(2, prev_state.free_transfers + 1)
+            start_budget: Decimal
+            if prev_state is not None:
+                start_budget = prev_state.transfers_budget
+            else:
+                # Initialize from manager.wallet if available, else zero
+                start_budget = Decimal(manager.wallet or 0)
+            state = ManagerGameweekState(
+                manager_id=manager_id,
+                gw_id=gw.gw_id,
+                free_transfers=free_transfers,
+                transfers_made=0,
+                transfers_budget=start_budget,
+                created_at=gw.start_date or gw.updated_at or gw.created_at,
+                updated_at=None,
+            )
+            self.session.add(state)
+            self.session.commit()
+
+        # Pricing for this GW (fallback to current_price)
+        price_out_row = self.session.exec(
+            select(PlayerPrice).where(
+                (PlayerPrice.player_id == player_out_id) & (PlayerPrice.gw_id == gw.gw_id)
+            )
+        ).first()
+        price_in_row = self.session.exec(
+            select(PlayerPrice).where(
+                (PlayerPrice.player_id == player_in_id) & (PlayerPrice.gw_id == gw.gw_id)
+            )
+        ).first()
+        out_price: Decimal
+        in_price: Decimal
+        if price_out_row is not None:
+            out_price = price_out_row.price
+        else:
+            out_player = self.session.get(Player, player_out_id)
+            if out_player is None:
+                return "Player out not found"
+            out_price = Decimal(out_player.current_price)
+        if price_in_row is not None:
+            in_price = price_in_row.price
+        else:
+            in_player = self.session.get(Player, player_in_id)
+            if in_player is None:
+                return "Player in not found"
+            in_price = Decimal(in_player.current_price)
+
+        # Budget check: End Bank = Start Bank + Price(Out) – Price(In)
+        start_bank: Decimal = state.transfers_budget
+        end_bank: Decimal = start_bank + out_price - in_price
+        if end_bank < 0:
+            return "Insufficient budget for transfer"
+
+        # Transfer rights: use FT if available, else extra transfer (records for points deduction)
+        if state.free_transfers > 0:
+            state.free_transfers -= 1
+        # Each transfer increments transfers_made
+        state.transfers_made += 1
+        state.transfers_budget = end_bank
+        state.updated_at = gw.updated_at or gw.end_date or gw.start_date or state.updated_at
+        self.session.add(state)
+
+        # Record transfer
         self.session.add(
             Transfer(
                 manager_id=manager_id,
@@ -237,6 +317,8 @@ class ManagerService:
                 gw_id=gw.gw_id,
             )
         )
+
+        # Apply the swap in current squad
         self.session.exec(
             update(ManagersSquad)
             .where(
@@ -307,7 +389,7 @@ class ManagerService:
         self.session.commit()
         return "OK"
 
-    def update_transfer(self, manager_id: UUID, transfer_id: UUID, player_out_id: UUID, player_in_id: UUID) -> str:
+    def update_transfer(self, manager_id: UUID, transfer_id: UUID, player_out_id: int, player_in_id: int) -> str:
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek"
