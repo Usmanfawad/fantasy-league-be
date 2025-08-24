@@ -309,12 +309,14 @@ class ManagerService:
         self.session.add(state)
 
         # Record transfer
+        from datetime import datetime
         self.session.add(
             Transfer(
                 manager_id=manager_id,
                 player_in_id=player_in_id,
                 player_out_id=player_out_id,
                 gw_id=gw.gw_id,
+                transfer_time=datetime.now(),
             )
         )
 
