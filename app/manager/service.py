@@ -203,7 +203,7 @@ class ManagerService:
             return "No active gameweek"
 
         current_ids = [
-            t[0]
+            t
             for t in self.session.exec(
                 select(ManagersSquad.player_id)
                 .where(ManagersSquad.manager_id == manager_id)
