@@ -27,7 +27,7 @@ def list_players(
 
 @player_router.get("/stats")
 def players_stats(
-    gw_id: str | None = Query(None),
+    gw_id: int | None = Query(None),
     team_id: int | None = Query(None),
     position_id: int | None = Query(None),
     sort: str | None = Query("cumulative_points"),
@@ -41,10 +41,9 @@ def players_stats(
 
 
 @player_router.get("/{player_id}")
-def get_player(player_id: str, session: Session = Depends(get_session)):
+def get_player(player_id: int, session: Session = Depends(get_session)):
     svc = PlayerService(session)
-    from uuid import UUID
-    data = svc.get_player(UUID(player_id))
+    data = svc.get_player(player_id)
     if not data:
         return ResponseSchema.not_found("Player not found")
     return ResponseSchema.success(data=data)
@@ -52,12 +51,11 @@ def get_player(player_id: str, session: Session = Depends(get_session)):
 
 @player_router.get("/{player_id}/stats")
 def get_player_stats(
-    player_id: str,
+    player_id: int,
     session: Session = Depends(get_session),
 ):
     svc = PlayerService(session)
-    from uuid import UUID
-    data = svc.get_player_stats(UUID(player_id))
+    data = svc.get_player_stats(player_id)
     if data is None:
         return ResponseSchema.not_found("Player not found")
     return ResponseSchema.success(data=data)

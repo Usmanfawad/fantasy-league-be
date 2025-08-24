@@ -118,20 +118,17 @@ def make_transfer(
 @manager_router.post("/{manager_id}/substitute")
 def substitute_player(
     manager_id: str,
-    player_out_id: str,
-    player_in_id: str,
+    player_out_id: int,
+    player_in_id: int,
     user: ManagerUser,
     session: Session = Depends(get_session),
 ):
     mid = UUID(manager_id)
-    from uuid import UUID as _UUID
-    pid_out = _UUID(player_out_id)
-    pid_in = _UUID(player_in_id)
     if user.id != mid and user.role != UserRole.ADMIN:
         return ResponseSchema.forbidden("Cannot substitute for another manager")
 
     svc = _svc(session)
-    result = svc.substitute(mid, pid_out, pid_in)
+    result = svc.substitute(mid, player_out_id, player_in_id)
     if result == "OK":
         return ResponseSchema.success(message="Substitution applied")
     return ResponseSchema.bad_request(result)

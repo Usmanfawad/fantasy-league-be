@@ -331,7 +331,7 @@ class ManagerService:
         self.session.commit()
         return "OK"
 
-    def substitute(self, manager_id: UUID, player_out_id: UUID, player_in_id: UUID) -> str:
+    def substitute(self, manager_id: UUID, player_out_id: int, player_in_id: int) -> str:
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek"

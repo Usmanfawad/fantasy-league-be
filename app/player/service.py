@@ -104,7 +104,7 @@ class PlayerService:
             )
         return data, total
 
-    def get_player(self, player_id: UUID) -> dict[str, Any] | None:
+    def get_player(self, player_id: int) -> dict[str, Any] | None:
         row = self.session.exec(
             select(Player, Team, Position)
             .where(Player.player_id == player_id)
@@ -153,7 +153,7 @@ class PlayerService:
             "selected_percentage": selected,
         }
 
-    def get_player_stats(self, player_id: UUID) -> list[dict[str, Any]] | None:
+    def get_player_stats(self, player_id: int) -> list[dict[str, Any]] | None:
         """Get all stats for a player across all gameweeks."""
         p = self.session.get(Player, player_id)
         if not p:
@@ -200,7 +200,7 @@ class PlayerService:
             for s in stats
         ]
 
-    def _calculate_cumulative_points(self, player_id: UUID, upto_gw_id: UUID | None) -> int:
+    def _calculate_cumulative_points(self, player_id: int, upto_gw_id: int | None) -> int:
         """Calculate total points up to the specified gameweek UUID; if None, sum all."""
         stmt = select(PlayerStat).where(PlayerStat.player_id == player_id)
         if upto_gw_id is not None:
@@ -214,7 +214,7 @@ class PlayerService:
         stats = self.session.exec(stmt).all()
         return sum(stat.total_points for stat in stats)
 
-    def _get_selection_percentage(self, player_id: UUID, gw_id: UUID) -> float:
+    def _get_selection_percentage(self, player_id: int, gw_id: int) -> float:
         """Calculate selection percentage for a player in a given gameweek."""
         price_data = self.session.exec(
             select(PlayerPrice)
@@ -237,7 +237,7 @@ class PlayerService:
 
     def players_stats(
         self,
-        gw_id: str | None,
+        gw_id: int | None,
         team_id: int | None,
         position_id: int | None,
         sort: str | None,
@@ -246,14 +246,8 @@ class PlayerService:
     ) -> tuple[list[dict[str, Any]], int]:
         """Get player stats with all required fields from the leaderboard spec."""
         stmt = select(PlayerStat, Player).join(Player, Player.player_id == PlayerStat.player_id)
-        gw_uuid: UUID | None = None
         if gw_id is not None:
-            try:
-                from uuid import UUID as _UUID
-                gw_uuid = _UUID(gw_id)
-                stmt = stmt.where(PlayerStat.gw_id == gw_uuid)
-            except Exception:
-                gw_uuid = None
+            stmt = stmt.where(PlayerStat.gw_id == gw_id)
         if team_id is not None:
             stmt = stmt.where(Player.team_id == team_id)
         if position_id is not None:
@@ -264,7 +258,7 @@ class PlayerService:
         # Sorting per spec: cumulative_points (default), gameweek_points, goals, assists, bonus_points, price
         def sort_key(item: tuple[PlayerStat, Player]) -> float:
             ps, p = item
-            current_gw: UUID | None = gw_uuid or ps.gw_id
+            current_gw: int | None = gw_id or ps.gw_id
             
             if sort == "gameweek_points":
                 return float(ps.total_points)

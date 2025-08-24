@@ -24,8 +24,8 @@ class Event(BaseModel):
     model_config = ORM_CONFIG
 
     event_id: UUID
-    player_id: UUID
-    gw_id: UUID
+    player_id: int
+    gw_id: int
     event_type: str
     fixture_id: int
     minute: int
@@ -50,7 +50,7 @@ class Fixture(BaseModel):
 class Gameweek(BaseModel):
     model_config = ORM_CONFIG
 
-    gw_id: UUID
+    gw_id: int
     gw_number: int
     start_date: datetime | None = None
     end_date: datetime | None = None
@@ -94,8 +94,8 @@ class ManagerSquad(BaseModel):
     model_config = ORM_CONFIG
 
     manager_id: UUID
-    player_id: UUID
-    gw_id: UUID
+    player_id: int
+    gw_id: int
     is_captain: bool = Field(default=False)
     is_vice_captain: bool = Field(default=False)
     is_starter: bool = Field(default=False)
@@ -104,8 +104,8 @@ class ManagerSquad(BaseModel):
 class PlayerPrice(BaseModel):
     model_config = ORM_CONFIG
 
-    player_id: UUID
-    gw_id: UUID
+    player_id: int
+    gw_id: int
     price: Decimal
     transfers_in: int
     transfers_out: int
@@ -117,8 +117,8 @@ class PlayerPrice(BaseModel):
 class PlayerStat(BaseModel):
     model_config = ORM_CONFIG
 
-    player_id: UUID
-    gw_id: UUID
+    player_id: int
+    gw_id: int
     total_points: int = Field(default=0)
     goals_scored: int = Field(default=0)
     assists: int = Field(default=0)
@@ -135,7 +135,7 @@ class PlayerStat(BaseModel):
 class Player(BaseModel):
     model_config = ORM_CONFIG
 
-    player_id: UUID
+    player_id: int
     player_firstname: str
     player_lastname: str
     player_fullname: str
@@ -178,9 +178,9 @@ class Transfer(BaseModel):
 
     transfer_id: UUID
     manager_id: UUID
-    player_in_id: UUID
-    player_out_id: UUID
-    gw_id: UUID
+    player_in_id: int
+    player_out_id: int
+    gw_id: int
     transfer_time: datetime
 
 
