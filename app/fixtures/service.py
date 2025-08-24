@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from sqlmodel import Session, select
 from uuid import UUID
+
+from sqlmodel import Session, select
 
 from app.db_models import Fixture, Gameweek
 

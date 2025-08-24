@@ -1,8 +1,9 @@
 from datetime import UTC, datetime, timedelta
+from datetime import datetime as dt
+from uuid import UUID
 
 import bcrypt
 from fastapi import HTTPException, status
-from uuid import UUID as UUIDType
 from jose import jwt
 from sqlmodel import Session, select
 
@@ -55,48 +56,41 @@ class AuthService:
                     detail="Squad name already taken",
                 )
 
-        # Validate optional favorites; ignore if not existing
-        fav_team_id = payload.get("fav_team")
-        if fav_team_id is not None and not session.get(Team, fav_team_id):
-            fav_team_id = None
+        # Handle fav_team similar to fav_player semantics, but as int PK
+        fav_team_raw = payload.get("fav_team")
+        fav_team_id = None
+        if fav_team_raw not in (None, 0, "0", "", "null"):
+            try:
+                team_id_int = int(fav_team_raw)
+                if session.get(Team, team_id_int):
+                    fav_team_id = team_id_int
+            except (ValueError, TypeError):
+                fav_team_id = None
 
         # Handle fav_player which is now a UUID PK.
-        # Treat 0/"0"/None/empty as no favorite, otherwise try to coerce to UUID and validate existence.
+        # Treat 0/"0"/None/empty as no favorite, otherwise try to coerce to 
+        # UUID and validate.
         fav_player_raw = payload.get("fav_player")
         fav_player_id = None
         if fav_player_raw not in (None, 0, "0", "", "null"):
             try:
-                fav_player_uuid = UUIDType(str(fav_player_raw))
+                fav_player_uuid = UUID(str(fav_player_raw))
                 if session.get(Player, fav_player_uuid):
                     fav_player_id = fav_player_uuid
             except (ValueError, TypeError):
                 fav_player_id = None
 
-        # Parse birthdate if provided
+        # Parse birthdate if provided (strictly MM/DD/YYYY)
         bd_raw = payload.get("birthdate")
         birthdate = None
         if isinstance(bd_raw, str) and bd_raw.strip():
             try:
-                # Try ISO format first (YYYY-MM-DD)
-                birthdate = datetime.fromisoformat(bd_raw)
+                birthdate = dt.strptime(bd_raw, "%m/%d/%Y")
             except ValueError:
-                try:
-                    # Try MM/DD/YYYY format
-                    from datetime import datetime as dt
-                    birthdate = dt.strptime(bd_raw, "%m/%d/%Y")
-                except ValueError:
-                    try:
-                        # Try DD/MM/YYYY format
-                        birthdate = dt.strptime(bd_raw, "%d/%m/%Y")
-                    except ValueError:
-                        # If all parsing fails, leave as None
-                        birthdate = None
-        elif isinstance(bd_raw, datetime):
-            birthdate = bd_raw
+                birthdate = None
 
         hashed_password = cls.get_password_hash(payload["password"])
         manager = Manager(
-            manager_id=None,
             mng_firstname=payload.get("firstname", ""),
             mng_lastname=payload.get("lastname", ""),
             squad_name=payload.get("squad_name", ""),

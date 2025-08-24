@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
 
 from app.dependencies import ManagerUser
-from uuid import UUID
 from app.manager.schemas import SquadSaveRequest, TransferRequest
 from app.manager.service import ManagerService
 from app.user.models import UserRole

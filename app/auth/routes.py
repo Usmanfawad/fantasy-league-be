@@ -24,10 +24,10 @@ class ManagerSignUp(BaseModel):
     email: EmailStr
     password: str
     birthdate: str | None = Field(
-        default=None,
-        description="Date of birth in DD-MM-YYYY format",
-        examples=["25-12-1990"],
-        json_schema_extra={"format": "DD-MM-YYYY"}
+        default="12/25/1990",
+        description="Date of birth in MM/DD/YYYY format",
+        examples=["12/25/1990"],
+        json_schema_extra={"format": "MM/DD/YYYY"}
     )
     city: str | None = None
     fav_team: int | None = None
@@ -40,11 +40,11 @@ class ManagerSignUp(BaseModel):
         if v is None:
             return v
         try:
-            # Try to parse the date in DD-MM-YYYY format
-            datetime.strptime(v, "%d-%m-%Y")
+            # Expect MM/DD/YYYY format only
+            datetime.strptime(v, "%m/%d/%Y")
             return v
         except ValueError as e:
-            raise ValueError("birthdate must be in DD-MM-YYYY format") from e
+            raise ValueError("birthdate must be in MM/DD/YYYY format") from e
 
 
 class ManagerLogin(BaseModel):
