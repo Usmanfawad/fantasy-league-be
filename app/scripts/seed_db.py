@@ -287,12 +287,25 @@ def seed_transfers(session: Session, managers: list[Manager], players: list[Play
         player_out = random.choice(players)
         player_in = random.choice([p for p in players if p.player_id != player_out.player_id])
         gw = random.choice(gws)
+        # Find latest price rows for selected GW
+        price_out = session.exec(
+            select(PlayerPrice).where(
+                (PlayerPrice.player_id == player_out.player_id) & (PlayerPrice.gw_id == gw.gw_id)
+            )
+        ).first()
+        price_in = session.exec(
+            select(PlayerPrice).where(
+                (PlayerPrice.player_id == player_in.player_id) & (PlayerPrice.gw_id == gw.gw_id)
+            )
+        ).first()
         session.add(
             Transfer(
                 manager_id=manager.manager_id,
                 player_in_id=player_in.player_id,
                 player_out_id=player_out.player_id,
                 gw_id=gw.gw_id,
+                player_in_price=(price_in.price if price_in else player_in.current_price),
+                player_out_price=(price_out.price if price_out else player_out.current_price),
                 transfer_time=datetime.now(UTC).replace(tzinfo=None),
             )
         )

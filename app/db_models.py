@@ -107,7 +107,12 @@ class ManagerGameweekState(SQLModel, table=True):
     gw_id: int = Field(primary_key=True, foreign_key="gameweeks.gw_id")
     free_transfers: int = 1
     transfers_made: int = 0
-    transfers_budget: Decimal = Field(sa_column=Column(Numeric, nullable=False))
+    squad_points: int = 0
+    captain_bonus: int = 0
+    transfer_penalty: int = 4
+    total_gw_points: int = 0
+    bench_points: int = 0
+    vice_captain_used: bool = False
     created_at: datetime
     updated_at: datetime | None = None
 
@@ -230,6 +235,8 @@ class Transfer(SQLModel, table=True):
     player_in_id: int = Field(foreign_key="players.player_id")
     player_out_id: int = Field(foreign_key="players.player_id")
     gw_id: int = Field(foreign_key="gameweeks.gw_id")
+    player_in_price: Decimal = Field(sa_column=Column(Numeric(5, 2), nullable=False))
+    player_out_price: Decimal = Field(sa_column=Column(Numeric(5, 2), nullable=False))
     transfer_time: datetime = Field(
         sa_column=Column(DateTime(timezone=False), nullable=False)
     )

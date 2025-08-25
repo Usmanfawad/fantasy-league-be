@@ -181,6 +181,8 @@ class Transfer(BaseModel):
     player_in_id: int
     player_out_id: int
     gw_id: int
+    player_in_price: Decimal
+    player_out_price: Decimal
     transfer_time: datetime
 
 

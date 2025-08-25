@@ -228,7 +228,7 @@ class ManagerService:
         if not manager:
             return "Manager not found"
 
-        # Ensure gameweek state exists (carry over free transfers up to 2; carry budget)
+        # Ensure gameweek state exists (carry over free transfers up to 3)
         state = self.session.exec(
             select(ManagerGameweekState)
             .where(ManagerGameweekState.manager_id == manager_id)
@@ -246,19 +246,16 @@ class ManagerService:
                     .where(ManagerGameweekState.manager_id == manager_id)
                     .where(ManagerGameweekState.gw_id == prev_gw.gw_id)
                 ).first()
-            free_transfers = 1 if prev_state is None else min(2, prev_state.free_transfers + 1)
-            start_budget: Decimal
-            if prev_state is not None:
-                start_budget = prev_state.transfers_budget
-            else:
-                # Initialize from manager.wallet if available, else zero
-                start_budget = Decimal(manager.wallet or 0)
+            free_transfers = 1 if prev_state is None else min(3, prev_state.free_transfers + 1)
             state = ManagerGameweekState(
                 manager_id=manager_id,
                 gw_id=gw.gw_id,
                 free_transfers=free_transfers,
                 transfers_made=0,
-                transfers_budget=start_budget,
+                squad_points=0,
+                captain_bonus=0,
+                transfer_penalty=4,
+                total_gw_points=0,
                 created_at=gw.start_date or gw.updated_at or gw.created_at,
                 updated_at=None,
             )
@@ -293,8 +290,8 @@ class ManagerService:
                 return "Player in not found"
             in_price = Decimal(in_player.current_price)
 
-        # Budget check: End Bank = Start Bank + Price(Out) – Price(In)
-        start_bank: Decimal = state.transfers_budget
+        # Budget check and update manager wallet: End Bank = Wallet + Price(Out) – Price(In)
+        start_bank: Decimal = Decimal(manager.wallet or 0)
         end_bank: Decimal = start_bank + out_price - in_price
         if end_bank < 0:
             return "Insufficient budget for transfer"
@@ -304,9 +301,11 @@ class ManagerService:
             state.free_transfers -= 1
         # Each transfer increments transfers_made
         state.transfers_made += 1
-        state.transfers_budget = end_bank
         state.updated_at = gw.updated_at or gw.end_date or gw.start_date or state.updated_at
         self.session.add(state)
+        # Persist manager wallet update
+        manager.wallet = int(end_bank)
+        self.session.add(manager)
 
         # Record transfer
         from datetime import datetime
@@ -316,6 +315,8 @@ class ManagerService:
                 player_in_id=player_in_id,
                 player_out_id=player_out_id,
                 gw_id=gw.gw_id,
+                player_in_price=in_price,
+                player_out_price=out_price,
                 transfer_time=datetime.now(),
             )
         )
