@@ -48,9 +48,7 @@ def get_squad(
     session: Session = Depends(get_session),
 ):
     mid = UUID(manager_id)
-    if user.id != mid and user.role != UserRole.ADMIN:
-        return ResponseSchema.forbidden("Cannot view another manager's squad")
-
+    
     svc = _svc(session)
     err, data = svc.get_squad(mid)
     if err:
