@@ -136,7 +136,7 @@ class Manager(SQLModel, table=True):
     created_at: datetime
     updated_at: datetime
     mng_datapoint: str
-    wallet: int = 0
+    wallet: float = 0.0
 
 
 class ManagersSquad(SQLModel, table=True):

@@ -5,7 +5,10 @@ from sqlmodel import Session, SQLModel, create_engine
 
 # Import models so their metadata is registered before create_all
 # ruff: noqa: F401
-from app import db_models
+from app import (
+    db_events,  # Ensure event listeners are registered
+    db_models,
+)
 from app.settings import settings
 
 

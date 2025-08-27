@@ -114,19 +114,76 @@ class ManagerService:
                     is_starter=bool(p.get("is_starter", True)),
                 )
             )
+        
+        # Create or update manager gameweek state to ensure free transfers are available
+        existing_state = self.session.exec(
+            select(ManagerGameweekState)
+            .where(ManagerGameweekState.manager_id == manager_id)
+            .where(ManagerGameweekState.gw_id == gw.gw_id)
+        ).first()
+        
+        if existing_state is None:
+            # Determine previous gw state for carry over
+            prev_gw = self.session.exec(
+                select(Gameweek).where(Gameweek.gw_number == gw.gw_number - 1)
+            ).first()
+            prev_state = None
+            if prev_gw is not None:
+                prev_state = self.session.exec(
+                    select(ManagerGameweekState)
+                    .where(ManagerGameweekState.manager_id == manager_id)
+                    .where(ManagerGameweekState.gw_id == prev_gw.gw_id)
+                ).first()
+            
+            free_transfers = 1 if prev_state is None else min(3, prev_state.free_transfers + 1)
+            
+            new_state = ManagerGameweekState(
+                manager_id=manager_id,
+                gw_id=gw.gw_id,
+                free_transfers=free_transfers,
+                transfers_made=0,
+                squad_points=0,
+                captain_bonus=0,
+                transfer_penalty=4,
+                total_gw_points=0,
+                bench_points=0,
+                vice_captain_used=False,
+                created_at=gw.start_date or gw.updated_at or gw.created_at,
+                updated_at=None,
+            )
+            self.session.add(new_state)
+        
         self.session.commit()
+        
+        # Calculate initial squad points after saving
+        from app.scoring.service import ScoringService
+        scoring_service = ScoringService(self.session)
+        scoring_service.update_manager_gameweek_points(manager_id, gw.gw_id)
+        
         return "OK"
 
     def get_squad(self, manager_id: UUID) -> tuple[str | None, list[dict[str, Any]]]:
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek", []
+        
+        # Get squad players with their stats
         rows = self.session.exec(
-            select(ManagersSquad, Player)
+            select(ManagersSquad, Player, PlayerStat)
             .where(ManagersSquad.manager_id == manager_id)
             .where(ManagersSquad.gw_id == gw.gw_id)
             .join(Player, Player.player_id == ManagersSquad.player_id)
+            .join(PlayerStat, (PlayerStat.player_id == ManagersSquad.player_id) & 
+                  (PlayerStat.gw_id == ManagersSquad.gw_id))
         ).all()
+        
+        # Get manager gameweek state for points
+        state = self.session.exec(
+            select(ManagerGameweekState)
+            .where(ManagerGameweekState.manager_id == manager_id)
+            .where(ManagerGameweekState.gw_id == gw.gw_id)
+        ).first()
+        
         data = [
             {
                 "player_id": str(player.player_id),
@@ -136,15 +193,40 @@ class ManagerService:
                 "is_captain": ms.is_captain,
                 "is_vice_captain": ms.is_vice_captain,
                 "is_starter": ms.is_starter,
+                "points": player_stat.total_points,
             }
-            for (ms, player) in rows
+            for (ms, player, player_stat) in rows
         ]
-        return None, data
+        
+        # Add manager gameweek points
+        squad_info = {
+            "squad_players": data,
+            "gameweek": gw.gw_id,
+            "squad_points": state.squad_points if state else 0,
+            "transfer_penalty": state.transfer_penalty if state else 0,
+            "total_gw_points": state.total_gw_points if state else 0,
+            "free_transfers": state.free_transfers if state else 0,
+            "transfers_made": state.transfers_made if state else 0,
+        }
+        
+        return None, squad_info
 
     def overview(self, manager_id: UUID) -> tuple[str | None, dict[str, Any]]:
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek", {}
+        
+        # Get manager gameweek state for proper points calculation
+        state = self.session.exec(
+            select(ManagerGameweekState)
+            .where(ManagerGameweekState.manager_id == manager_id)
+            .where(ManagerGameweekState.gw_id == gw.gw_id)
+        ).first()
+        
+        if not state:
+            return "No gameweek state found", {}
+        
+        # Get squad players with their stats
         rows = self.session.exec(
             select(ManagersSquad, PlayerStat)
             .where(ManagersSquad.manager_id == manager_id)
@@ -153,7 +235,7 @@ class ManagerService:
                 PlayerStat.gw_id == ManagersSquad.gw_id
             ))
         ).all()
-        total_points = sum(ps.total_points for (_, ps) in rows)
+        
         details = [
             {
                 "player_id": str(ps.player_id),
@@ -165,28 +247,31 @@ class ManagerService:
             }
             for (_, ps) in rows
         ]
-        return None, {"total_points": total_points, "players": details}
+        
+        return None, {
+            "squad_points": state.squad_points,
+            "transfer_penalty": state.transfer_penalty,
+            "total_gw_points": state.total_gw_points,
+            "free_transfers": state.free_transfers,
+            "transfers_made": state.transfers_made,
+            "players": details
+        }
 
     def leaderboard(self, page: int, page_size: int) -> tuple[list[dict[str, Any]], int]:
         gw = self.get_active_gameweek()
         if gw is None:
             return [], 0
+        
+        # Get manager gameweek states for proper points calculation
         rows = self.session.exec(
-            select(Manager.manager_id, Manager.squad_name, PlayerStat.total_points)
-            .join(ManagersSquad, ManagersSquad.manager_id == Manager.manager_id)
-            .join(PlayerStat, (PlayerStat.player_id == ManagersSquad.player_id) & (
-                PlayerStat.gw_id == ManagersSquad.gw_id
-            ))
-            .where(ManagersSquad.gw_id == gw.gw_id)
+            select(Manager.manager_id, Manager.squad_name, ManagerGameweekState.total_gw_points)
+            .join(ManagerGameweekState, ManagerGameweekState.manager_id == Manager.manager_id)
+            .where(ManagerGameweekState.gw_id == gw.gw_id)
         ).all()
-        totals: dict[UUID, int] = defaultdict(int)
-        names: dict[UUID, str] = {}
-        for mid, name, pts in rows:
-            totals[mid] += pts
-            names[mid] = name
+        
         items = sorted(
-            ({"manager_id": str(mid), "squad_name": names[mid], "points": pts} 
-            for mid, pts in totals.items()),
+            ({"manager_id": str(mid), "squad_name": name, "points": pts} 
+            for mid, name, pts in rows),
             key=lambda i: i["points"],
             reverse=True,
         )
@@ -228,39 +313,14 @@ class ManagerService:
         if not manager:
             return "Manager not found"
 
-        # Ensure gameweek state exists (carry over free transfers up to 3)
+        # Get gameweek state (should already exist from squad creation)
         state = self.session.exec(
             select(ManagerGameweekState)
             .where(ManagerGameweekState.manager_id == manager_id)
             .where(ManagerGameweekState.gw_id == gw.gw_id)
         ).first()
         if state is None:
-            # Determine previous gw state for carry over
-            prev_gw = self.session.exec(
-                select(Gameweek).where(Gameweek.gw_number == gw.gw_number - 1)
-            ).first()
-            prev_state = None
-            if prev_gw is not None:
-                prev_state = self.session.exec(
-                    select(ManagerGameweekState)
-                    .where(ManagerGameweekState.manager_id == manager_id)
-                    .where(ManagerGameweekState.gw_id == prev_gw.gw_id)
-                ).first()
-            free_transfers = 1 if prev_state is None else min(3, prev_state.free_transfers + 1)
-            state = ManagerGameweekState(
-                manager_id=manager_id,
-                gw_id=gw.gw_id,
-                free_transfers=free_transfers,
-                transfers_made=0,
-                squad_points=0,
-                captain_bonus=0,
-                transfer_penalty=4,
-                total_gw_points=0,
-                created_at=gw.start_date or gw.updated_at or gw.created_at,
-                updated_at=None,
-            )
-            self.session.add(state)
-            self.session.commit()
+            return "No gameweek state found. Please save your squad first."
 
         # Pricing for this GW (fallback to current_price)
         price_out_row = self.session.exec(
@@ -299,12 +359,16 @@ class ManagerService:
         # Transfer rights: use FT if available, else extra transfer (records for points deduction)
         if state.free_transfers > 0:
             state.free_transfers -= 1
+        else:
+            # Extra transfer - add penalty points
+            state.transfer_penalty += 4
+        
         # Each transfer increments transfers_made
         state.transfers_made += 1
         state.updated_at = gw.updated_at or gw.end_date or gw.start_date or state.updated_at
         self.session.add(state)
         # Persist manager wallet update
-        manager.wallet = int(end_bank)
+        manager.wallet = float(end_bank)
         self.session.add(manager)
 
         # Record transfer
@@ -332,9 +396,16 @@ class ManagerService:
             .values(player_id=player_in_id)
         )
         self.session.commit()
+        
+        # Update manager gameweek points after transfer
+        from app.scoring.service import ScoringService
+        scoring_service = ScoringService(self.session)
+        scoring_service.update_manager_gameweek_points(manager_id, gw.gw_id)
+        
         return "OK"
 
-    def substitute(self, manager_id: UUID, player_out_id: int, player_in_id: int) -> str:
+    def substitute(self, manager_id: UUID, player_out_id: int, player_in_id: int
+    ) -> str:
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek"
@@ -375,11 +446,21 @@ class ManagerService:
             starter_ids.remove(player_in_id)
             starter_ids.add(player_out_id)
             
-        # Validate starting 11 positions
+        # Validate starting 11 positions AFTER applying the prospective swap
+        # Ensure we still have exactly 11 starters
+        if len(starter_ids) != 11:
+            return "Invalid formation after substitution"
+
+        # Recompute position counts for the updated starter set
         pos_counts: dict[int, int] = defaultdict(int)
-        for _, pos_id in starters:
+        pos_rows = self.session.exec(
+            select(Player.position_id).where(
+                Player.player_id.in_(list(starter_ids))
+            )
+        ).all()
+        for (pos_id,) in pos_rows:
             pos_counts[pos_id] += 1
-            
+
         # Basic formation validation (at least 1 GK, 3 DEF, 2 MID, 1 FWD)
         min_required = {1: 1, 2: 3, 3: 2, 4: 1}
         if any(pos_counts.get(pid, 0) < count for pid, count in min_required.items()):

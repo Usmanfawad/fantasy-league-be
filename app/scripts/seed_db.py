@@ -20,6 +20,9 @@ from app.db_models import (
     Team,
     Transfer,
 )
+
+# Use scoring rules constants
+from app.scoring.service import SCORING_RULES
 from app.utils.db import engine
 
 fake = Faker()
@@ -163,24 +166,19 @@ def seed_scoring_rules(session: Session, positions: list[Position]) -> None:
     existing = session.exec(select(ScoringRule)).all()
     if existing:
         return
+
+    
     rules: list[ScoringRule] = []
-    base = {
-        "goal": {1: 6, 2: 6, 3: 5, 4: 4},
-        "assist": {1: 3, 2: 3, 3: 3, 4: 3},
-        "clean_sheet": {1: 4, 2: 4, 3: 1, 4: 0},
-        "yellow": {1: -1, 2: -1, 3: -1, 4: -1},
-        "red": {1: -3, 2: -3, 3: -3, 4: -3},
-        "minutes": {1: 2, 2: 2, 3: 2, 4: 2},
-    }
-    for event_type, mapping in base.items():
-        for pos in positions:
+    for event_type, position_mapping in SCORING_RULES.items():
+        for position_id, points in position_mapping.items():
             rules.append(
                 ScoringRule(
                     event_type=event_type,
-                    position_id=pos.position_id,
-                    points=mapping[pos.position_id],
+                    position_id=position_id,
+                    points=points,
                 )
             )
+    
     session.add_all(rules)
     session.commit()
 
@@ -248,15 +246,36 @@ def seed_prices_and_stats(
             clean = random.randint(0, 1) if minutes >= 60 else 0
             bonus = random.randint(0, 3) if minutes > 0 else 0
             
-            # Points calculation matching notebook
-            total_points = (
-                goals * 5 +
-                assists * 3 +
-                clean * 4 +
-                bonus -
-                yellow -
-                (red * 3)
-            )
+            
+            total_points = 0
+            
+            # Goals
+            goal_points = SCORING_RULES.get('goal', {}).get(player.position_id, 0)
+            total_points += goals * goal_points
+            
+            # Assists
+            assist_points = SCORING_RULES.get('assist', {}).get(player.position_id, 0)
+            total_points += assists * assist_points
+            
+            # Clean sheets
+            clean_sheet_points = SCORING_RULES.get('clean_sheet', {}).get(player.position_id, 0)
+            total_points += clean * clean_sheet_points
+            
+            # Yellow cards
+            yellow_points = SCORING_RULES.get('yellow', {}).get(player.position_id, 0)
+            total_points += yellow * yellow_points
+            
+            # Red cards
+            red_points = SCORING_RULES.get('red', {}).get(player.position_id, 0)
+            total_points += red * red_points
+            
+            # Started bonus
+            if started:
+                started_points = SCORING_RULES.get('started', {}).get(player.position_id, 0)
+                total_points += started_points
+            
+            # Bonus points (from external source)
+            total_points += bonus
             session.add(
                 PlayerStat(
                     player_id=player.player_id,

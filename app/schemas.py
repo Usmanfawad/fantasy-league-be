@@ -87,7 +87,7 @@ class Manager(BaseModel):
     created_at: datetime
     updated_at: datetime
     mng_datapoint: str
-    wallet: int = Field(default=0)
+    wallet: float = Field(default=0.0)
 
 
 class ManagerSquad(BaseModel):
