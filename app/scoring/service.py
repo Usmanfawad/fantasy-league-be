@@ -5,7 +5,13 @@ from uuid import UUID
 
 from sqlmodel import Session, select
 
-from app.db_models import ManagerGameweekState, ManagersSquad, Player, PlayerStat
+from app.db_models import (
+    Gameweek,
+    ManagerGameweekState,
+    ManagersSquad,
+    Player,
+    PlayerStat,
+)
 
 # Scoring rules constants based on the CSV file
 SCORING_RULES = {
@@ -242,10 +248,13 @@ class ScoringService:
             
         # Calculate squad points
         squad_points = self.calculate_manager_squad_points(manager_id, gw_id)
-        
+        # Determine whether to apply transfer penalties now (only after GW completion)
+        gw = self.session.get(Gameweek, gw_id)
+        apply_penalty = gw is not None and gw.status == "completed"
+
         # Update state
         state.squad_points = squad_points
-        state.total_gw_points = squad_points - state.transfer_penalty
+        state.total_gw_points = squad_points - (state.transfer_penalty if apply_penalty else 0)
         
         self.session.add(state)
         self.session.commit()

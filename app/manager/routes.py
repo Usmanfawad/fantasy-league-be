@@ -109,7 +109,7 @@ def make_transfer(
     svc = _svc(session)
     result = svc.make_transfer(mid, body.player_out_id, body.player_in_id, body.gw_id)
     if result == "OK":
-        return ResponseSchema.success(message="Transfer completed with 4-point penalty")
+        return ResponseSchema.success(message="Transfer completed; any penalty will be applied at GW end")
     return ResponseSchema.bad_request(result)
 
 

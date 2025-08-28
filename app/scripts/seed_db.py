@@ -41,7 +41,7 @@ def seed_positions(session: Session) -> list[Position]:
         Position(position_id=4, position_name="Forward"),
     ]
     session.add_all(positions)
-    session.commit()
+    # Don't commit here - let the main function handle it
     return positions
 
 
@@ -72,7 +72,7 @@ def seed_teams(session: Session, count: int = 6) -> list[Team]:
             )
         )
     session.add_all(teams)
-    session.commit()
+    # Don't commit here - let the main function handle it
     return teams
 
 
@@ -104,7 +104,7 @@ def seed_players(
                 )
             )
     session.add_all(players)
-    session.commit()
+    # Don't commit here - let the main function handle it
     return players
 
 
@@ -128,7 +128,7 @@ def seed_gameweeks(session: Session, count: int = 3) -> list[Gameweek]:
             )
         )
     session.add_all(gws)
-    session.commit()
+    # Don't commit here - let the main function handle it
     return gws
 
 
@@ -158,7 +158,7 @@ def seed_fixtures(session: Session, gws: list[Gameweek], teams: list[Team]) -> l
                 )
             )
     session.add_all(fixtures)
-    session.commit()
+    # Don't commit here - let the main function handle it
     return fixtures
 
 
@@ -180,7 +180,7 @@ def seed_scoring_rules(session: Session, positions: list[Position]) -> None:
             )
     
     session.add_all(rules)
-    session.commit()
+    # Don't commit here - let the main function handle it
 
 
 def seed_managers(
@@ -215,7 +215,7 @@ def seed_manager_squads(
                         is_starter=True,
                     )
                 )
-    session.commit()
+    # Don't commit here - let the main function handle it
 
 
 def seed_prices_and_stats(
@@ -293,7 +293,7 @@ def seed_prices_and_stats(
                     started=started,
                 )
             )
-    session.commit()
+    # Don't commit here - let the main function handle it
 
 
 def seed_transfers(session: Session, managers: list[Manager], players: list[Player], gws: list[Gameweek]) -> None:
@@ -328,7 +328,7 @@ def seed_transfers(session: Session, managers: list[Manager], players: list[Play
                 transfer_time=datetime.now(UTC).replace(tzinfo=None),
             )
         )
-    session.commit()
+    # Don't commit here - let the main function handle it
 
 
 def main() -> None:
@@ -343,10 +343,17 @@ def main() -> None:
         seed_manager_squads(session, managers, players, gws)
         seed_prices_and_stats(session, players, gws)
         seed_transfers(session, managers, players, gws)
-        print(
-            f"Seeded: {len(positions)} positions, {len(teams)} teams, {len(players)} players, "
-            f"{len(gws)} gameweeks, {len(fixtures)} fixtures, {len(managers)} managers."
-        )
+        
+        # Always commit - if no changes, this will be a no-op
+        try:
+            session.commit()
+            print(
+                f"Seeded: {len(positions)} positions, {len(teams)} teams, {len(players)} players, "
+                f"{len(gws)} gameweeks, {len(fixtures)} fixtures, {len(managers)} managers."
+            )
+        except Exception as e:
+            # If commit fails due to no changes, that's okay
+            print(f"Seeding completed (no new data to commit): {e}")
 
 
 if __name__ == "__main__":

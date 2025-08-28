@@ -63,11 +63,13 @@ def create_gameweek(
 def activate_gameweek(gw_id: str, session: Session = Depends(get_session)):
     from app.db_models import Gameweek
 
-    # Deactivate existing
+    # Complete any currently active gameweek first and recalculate manager totals
     rows = session.exec(select(Gameweek)).all()
+    prev_active: Gameweek | None = None
     for g in rows:
-        if g.status == "active":
-            g.status = "completed" if str(g.gw_id) != gw_id else g.status
+        if g.status == "active" and str(g.gw_id) != gw_id:
+            g.status = "completed"
+            prev_active = g
             session.add(g)
     from uuid import UUID
     gw = session.get(Gameweek, UUID(gw_id))
@@ -76,6 +78,13 @@ def activate_gameweek(gw_id: str, session: Session = Depends(get_session)):
     gw.status = "active"
     session.add(gw)
     session.commit()
+
+    # After committing previous GW completion, apply penalties by recalculating totals
+    if prev_active is not None:
+        from app.scoring.service import ScoringService
+        scoring = ScoringService(session)
+        scoring.recalculate_all_manager_points(prev_active.gw_id)
+
     return ResponseSchema.success(message="Gameweek activated", data={"gw_id": str(gw.gw_id)})
 
 

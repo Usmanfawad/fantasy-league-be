@@ -40,11 +40,20 @@ class ManagerService:
             team_counts[team.team_id] += 1
             pos_counts[player.position_id] += 1
             if team_counts[team.team_id] > 3:
-                return False, "No more than 3 players from the same team"
+                return False, f"No more than 3 players from the same team. Team {team.team_name} has {team_counts[team.team_id]} players"
 
         required = {1: 2, 2: 5, 3: 5, 4: 3}  # GK: 2, DEF: 5, MID: 5, FWD: 3
-        if any(pos_counts.get(pid, 0) != count for pid, count in required.items()):
-            return False, "Position quotas not satisfied"
+        position_names = {1: "Goalkeeper", 2: "Defender", 3: "Midfielder", 4: "Forward"}
+        
+        # Check each position requirement and build specific error message
+        quota_errors = []
+        for pos_id, required_count in required.items():
+            current_count = pos_counts.get(pos_id, 0)
+            if current_count != required_count:
+                quota_errors.append(f"{position_names[pos_id]}: {current_count}/{required_count}")
+        
+        if quota_errors:
+            return False, f"Position quotas not satisfied. Required: {', '.join(quota_errors)}"
             
         return True, "OK"
 
@@ -53,6 +62,15 @@ class ManagerService:
         return self.session.exec(
             select(Gameweek)
             .where(Gameweek.status.in_(["active", "Ongoing", "open"]))
+            .order_by(Gameweek.gw_number.desc())
+            .limit(1)
+        ).first()
+
+    def get_open_gameweek(self) -> Gameweek | None:
+        """Return the latest transfer-week gameweek (status == 'open')."""
+        return self.session.exec(
+            select(Gameweek)
+            .where(Gameweek.status == "open")
             .order_by(Gameweek.gw_number.desc())
             .limit(1)
         ).first()
@@ -82,27 +100,24 @@ class ManagerService:
             team_counts[team.team_id] += 1
             pos_counts[player.position_id] += 1
             if team_counts[team.team_id] > 3:
-                return "No more than 3 players from the same team"
+                return f"No more than 3 players from the same team. Team {team.team_name} has {team_counts[team.team_id]} players"
 
         required = {1: 2, 2: 5, 3: 5, 4: 3}
-        if any(pos_counts.get(pid, 0) != count for pid, count in required.items()):
-            return "Position quotas not satisfied"
+        position_names = {1: "Goalkeeper", 2: "Defender", 3: "Midfielder", 4: "Forward"}
+        
+        # Check each position requirement and build specific error message
+        quota_errors = []
+        for pos_id, required_count in required.items():
+            current_count = pos_counts.get(pos_id, 0)
+            if current_count != required_count:
+                quota_errors.append(f"{position_names[pos_id]}: {current_count}/{required_count}")
+        
+        if quota_errors:
+            return f"Position quotas not satisfied. Required: {', '.join(quota_errors)}"
 
         starters = sum(1 for p in players_payload if p.get("is_starter", True))
         if starters != 11:
             return "There must be exactly 11 starters"
-        # Enforce valid formation for the starting XI
-        starter_ids_check = [p["player_id"] for p in players_payload if p.get("is_starter", True)]
-        starter_pos_rows = self.session.exec(
-            select(Player.position_id).where(Player.player_id.in_(starter_ids_check))
-        ).all()
-        starter_pos_counts: dict[int, int] = defaultdict(int)
-        for row in starter_pos_rows:
-            pos_id = row if isinstance(row, int) else row[0]
-            starter_pos_counts[pos_id] += 1
-        min_required_starting = {1: 1, 2: 3, 3: 2, 4: 1}
-        if any(starter_pos_counts.get(pid, 0) < c for pid, c in min_required_starting.items()):
-            return "Starting XI must include at least 1 GK, 3 DEF, 2 MID, 1 FWD"
         captains = sum(1 for p in players_payload if p.get("is_captain"))
         vice = sum(1 for p in players_payload if p.get("is_vice_captain"))
         if captains not in (0, 1) or vice not in (0, 1):
@@ -211,11 +226,14 @@ class ManagerService:
         ]
         
         # Add manager gameweek points
+        gw_row = self.session.get(Gameweek, gw.gw_id)
+        is_completed = gw_row is not None and gw_row.status == "completed"
         squad_info = {
             "squad_players": data,
             "gameweek": gw.gw_id,
             "squad_points": state.squad_points if state else 0,
-            "transfer_penalty": state.transfer_penalty if state else 0,
+            # Hide penalties until the gameweek is completed
+            "transfer_penalty": (state.transfer_penalty if (state and is_completed) else 0),
             "total_gw_points": state.total_gw_points if state else 0,
             "free_transfers": state.free_transfers if state else 0,
             "transfers_made": state.transfers_made if state else 0,
@@ -260,9 +278,12 @@ class ManagerService:
             for (_, ps) in rows
         ]
         
+        gw_row = self.session.get(Gameweek, gw.gw_id)
+        is_completed = gw_row is not None and gw_row.status == "completed"
         return None, {
             "squad_points": state.squad_points,
-            "transfer_penalty": state.transfer_penalty,
+            # Hide penalties until the gameweek is completed
+            "transfer_penalty": state.transfer_penalty if is_completed else 0,
             "total_gw_points": state.total_gw_points,
             "free_transfers": state.free_transfers,
             "transfers_made": state.transfers_made,
@@ -293,11 +314,15 @@ class ManagerService:
         return items[start:end], total
 
     def make_transfer(self, manager_id: UUID, player_out_id: int, player_in_id: int, gw_id: int | None) -> str:
+        # Transfers are only allowed during the transfer week (status == 'open')
         gw = self.session.get(Gameweek, gw_id) if gw_id is not None else None
+        print(gw)
         if gw is None:
-            gw = self.get_active_gameweek()
+            gw = self.get_open_gameweek()
         if gw is None:
-            return "No active gameweek"
+            return "No transfer window currently open"
+        if gw.status != "open":
+            return "Transfers are only allowed during the transfer week"
 
         current_ids = [
             t
@@ -371,10 +396,6 @@ class ManagerService:
         # Transfer rights: use FT if available, else extra transfer (records for points deduction)
         if state.free_transfers > 0:
             state.free_transfers -= 1
-            # Ensure no penalty is applied when a free transfer is used
-            if state.transfers_made == 0:
-                state.transfer_penalty = 0
-                
         else:
             # Extra transfer - add penalty points
             state.transfer_penalty += 4
@@ -413,7 +434,7 @@ class ManagerService:
         )
         self.session.commit()
         
-        # Update manager gameweek points after transfer
+        # Update manager gameweek points after transfer (penalty only applied at GW end)
         from app.scoring.service import ScoringService
         scoring_service = ScoringService(self.session)
         scoring_service.update_manager_gameweek_points(manager_id, gw.gw_id)
@@ -442,10 +463,6 @@ class ManagerService:
         if not out_row or not in_row:
             return "Both players must be in the squad"
             
-        # Exactly one of the two must be a starter (one in, one out)
-        if (out_row.is_starter and in_row.is_starter) or (not out_row.is_starter and not in_row.is_starter):
-            return "Exactly one of the two players must be a starter"
-
         # Get all current starters
         starters = self.session.exec(
             select(ManagersSquad.player_id, Player.position_id)
@@ -459,20 +476,6 @@ class ManagerService:
         
         # Calculate new starters after substitution
         starter_ids = set(pid for pid, _ in starters)
-        # Validate current formation before attempting the swap
-        current_pos_counts: dict[int, int] = defaultdict(int)
-        for _, pos_id in starters:
-            current_pos_counts[pos_id] += 1
-        min_required = {1: 1, 2: 3, 3: 2, 4: 1}
-        if any(current_pos_counts.get(pid, 0) < count for pid, count in min_required.items()):
-            return (
-                f"Current formation is invalid: GK={current_pos_counts.get(1, 0)}, "
-                f"DEF={current_pos_counts.get(2, 0)}, MID={current_pos_counts.get(3, 0)}, "
-                f"FWD={current_pos_counts.get(4, 0)}"
-            )
-        # Ensure we start from a valid 11 starters
-        if len(starter_ids) != 11:
-            return "There must be exactly 11 starters before substitution"
         if out_row.is_starter:
             starter_ids.remove(player_out_id)
             starter_ids.add(player_in_id)
@@ -483,46 +486,31 @@ class ManagerService:
         # Validate starting 11 positions AFTER applying the prospective swap
         # Ensure we still have exactly 11 starters
         if len(starter_ids) != 11:
-            return "Invalid formation after substitution"
+            return f"Invalid formation after substitution. Expected 11 starters, got {len(starter_ids)}"
 
-        # Compute post-swap position counts in-memory (no extra query)
-        id_to_pos: dict[int, int] = {pid: pos for (pid, pos) in starters}
-        new_pos_counts: dict[int, int] = defaultdict(int)
-        for _, pos_id in starters:
-            new_pos_counts[pos_id] += 1
-
-        def _get_pos_id(row_val: Any) -> int:
-            return row_val if isinstance(row_val, int) else row_val[0]
-
-        if out_row.is_starter:
-            out_pos = id_to_pos.get(player_out_id)
-            in_pos_row = self.session.exec(
-                select(Player.position_id).where(Player.player_id == player_in_id)
-            ).first()
-            if out_pos is None or in_pos_row is None:
-                return "Players not found for position lookup"
-            in_pos = _get_pos_id(in_pos_row)
-            new_pos_counts[out_pos] = max(0, new_pos_counts.get(out_pos, 0) - 1)
-            new_pos_counts[in_pos] += 1
-        else:  # in_row.is_starter
-            in_pos = id_to_pos.get(player_in_id)
-            out_pos_row = self.session.exec(
-                select(Player.position_id).where(Player.player_id == player_out_id)
-            ).first()
-            if in_pos is None or out_pos_row is None:
-                return "Players not found for position lookup"
-            out_pos = _get_pos_id(out_pos_row)
-            new_pos_counts[in_pos] = max(0, new_pos_counts.get(in_pos, 0) - 1)
-            new_pos_counts[out_pos] += 1
+        # Recompute position counts for the updated starter set
+        pos_counts: dict[int, int] = defaultdict(int)
+        pos_rows = self.session.exec(
+            select(Player.position_id).where(
+                Player.player_id.in_(list(starter_ids))
+            )
+        ).all()
+        for pos_id in pos_rows:
+            pos_counts[pos_id] += 1
 
         # Basic formation validation (at least 1 GK, 3 DEF, 2 MID, 1 FWD)
         min_required = {1: 1, 2: 3, 3: 2, 4: 1}
-        if any(new_pos_counts.get(pid, 0) < count for pid, count in min_required.items()):
-            return (
-                f"Invalid formation after substitution: GK={new_pos_counts.get(1, 0)}, "
-                f"DEF={new_pos_counts.get(2, 0)}, MID={new_pos_counts.get(3, 0)}, "
-                f"FWD={new_pos_counts.get(4, 0)}"
-            )
+        position_names = {1: "Goalkeeper", 2: "Defender", 3: "Midfielder", 4: "Forward"}
+        
+        # Check each position requirement and build specific error message
+        missing_positions = []
+        for pos_id, min_count in min_required.items():
+            current_count = pos_counts.get(pos_id, 0)
+            if current_count < min_count:
+                missing_positions.append(f"{position_names[pos_id]}: {current_count}/{min_count}")
+        
+        if missing_positions:
+            return f"Invalid formation after substitution. Missing: {', '.join(missing_positions)}"
             
         # Apply the substitution
         out_row.is_starter, in_row.is_starter = in_row.is_starter, out_row.is_starter
