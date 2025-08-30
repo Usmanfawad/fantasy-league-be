@@ -6,9 +6,12 @@ then creates a valid squad that satisfies all requirements.
 """
 
 import json
+
 from sqlmodel import Session, select
+
 from app.db_models import Player, Position
 from app.utils.db import engine
+
 
 def get_players_by_position():
     """Get all players grouped by position."""
@@ -94,7 +97,7 @@ def main():
         print("ERROR: No players found in database!")
         return
     
-    print(f"Found players:")
+    print("Found players:")
     for position, players in players_by_position.items():
         print(f"  {position}: {len(players)} players")
     
@@ -154,7 +157,7 @@ def main():
                     team_distribution[team_id] = team_distribution.get(team_id, 0) + 1
                     break
     
-    print(f"\nTeam distribution:")
+    print("\nTeam distribution:")
     for team_id, count in sorted(team_distribution.items()):
         print(f"  Team {team_id}: {count} players")
 

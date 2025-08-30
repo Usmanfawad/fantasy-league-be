@@ -3,10 +3,11 @@
 Script to find valid substitutions that maintain proper formation.
 """
 
-import json
 from sqlmodel import Session, select
-from app.db_models import Player, Position, ManagersSquad
+
+from app.db_models import ManagersSquad, Player, Position
 from app.utils.db import engine
+
 
 def get_current_squad(manager_id: str, gw_id: int = 1):
     """Get current squad with player details."""

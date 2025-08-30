@@ -4,8 +4,10 @@ Script to find valid transfer examples based on current squad.
 """
 
 from sqlmodel import Session, select
-from app.db_models import Player, Position, Team, ManagersSquad, PlayerPrice
+
+from app.db_models import ManagersSquad, Player, Position, Team
 from app.utils.db import engine
+
 
 def get_current_squad_players(manager_id: str, gw_id: int = 1):
     """Get current squad players with details."""
@@ -49,13 +51,13 @@ def find_valid_transfers(manager_id: str, gw_id: int = 1):
     for squad, player, position, team in current_squad:
         print(f"ID: {player.player_id} | {player.player_fullname} | {position.position_name} | {team.team_name} | Price: {player.current_price}")
     
-    print(f"\nAvailable Players (not in squad):")
+    print("\nAvailable Players (not in squad):")
     print("=" * 50)
     for player, position, team in available_players:
         print(f"ID: {player.player_id} | {player.player_fullname} | {position.position_name} | {team.team_name} | Price: {player.current_price}")
     
     # Find valid transfers (same position swaps)
-    print(f"\nValid Transfer Examples (same position swaps):")
+    print("\nValid Transfer Examples (same position swaps):")
     print("=" * 50)
     
     valid_transfers = []
@@ -96,4 +98,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
