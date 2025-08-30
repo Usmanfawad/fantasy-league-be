@@ -30,8 +30,8 @@ class FixturesService:
         ]
 
     def fixtures_for_gw(self, gameweek_id: str) -> list[dict]:
-        gw = UUID(gameweek_id)
-        rows = self.session.exec(select(Fixture).where(Fixture.gw_id == gw)).all()
+        gw_id = int(gameweek_id)
+        rows = self.session.exec(select(Fixture).where(Fixture.gw_id == gw_id)).all()
         return [
             {
                 "fixture_id": f.fixture_id,
@@ -46,8 +46,8 @@ class FixturesService:
         ]
 
     def results_for_gw(self, gameweek_id: str) -> list[dict]:
-        gw = UUID(gameweek_id)
-        rows = self.session.exec(select(Fixture).where(Fixture.gw_id == gw)).all()
+        gw_id = int(gameweek_id)
+        rows = self.session.exec(select(Fixture).where(Fixture.gw_id == gw_id)).all()
         return [
             {
                 "fixture_id": f.fixture_id,
