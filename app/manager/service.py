@@ -476,12 +476,19 @@ class ManagerService:
         
         # Calculate new starters after substitution
         starter_ids = set(pid for pid, _ in starters)
+        
+        # Remove both players from current starter set
         if out_row.is_starter:
             starter_ids.remove(player_out_id)
-            starter_ids.add(player_in_id)
-        elif in_row.is_starter:
+        if in_row.is_starter:
             starter_ids.remove(player_in_id)
+        
+        # Add them back based on their swapped status
+        # After swap: out_row gets in_row's starter status, in_row gets out_row's starter status
+        if in_row.is_starter:  # out_row will become starter (gets in_row's current status)
             starter_ids.add(player_out_id)
+        if out_row.is_starter:  # in_row will become starter (gets out_row's current status)
+            starter_ids.add(player_in_id)
             
         # Validate starting 11 positions AFTER applying the prospective swap
         # Ensure we still have exactly 11 starters

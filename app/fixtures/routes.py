@@ -71,8 +71,8 @@ def activate_gameweek(gw_id: str, session: Session = Depends(get_session)):
             g.status = "completed"
             prev_active = g
             session.add(g)
-    from uuid import UUID
-    gw = session.get(Gameweek, UUID(gw_id))
+    # Gameweek uses integer ID, not UUID
+    gw = session.get(Gameweek, int(gw_id))
     if not gw:
         return ResponseSchema.not_found("Gameweek not found")
     gw.status = "active"

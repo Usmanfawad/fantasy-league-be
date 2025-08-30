@@ -70,3 +70,4 @@ if __name__ == "__main__":
             print("Usage: python -c 'from app.check_gameweek_status import open_transfer_window; open_transfer_window(1)'")
     else:
         check_gameweek_statuses()
+
