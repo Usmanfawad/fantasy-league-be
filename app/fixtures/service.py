@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
+from sqlalchemy.orm import aliased
 from sqlmodel import Session, select
 
 from app.db_models import (
@@ -13,6 +14,7 @@ from app.db_models import (
     ManagerGameweekState,
     ManagersSquad,
     PlayerPrice,
+    Team,
     Transfer,
 )
 
@@ -22,37 +24,62 @@ class FixturesService:
         self.session = session
 
     def list_fixtures(self) -> list[dict]:
+        HomeTeam = aliased(Team)
+        AwayTeam = aliased(Team)
         rows = self.session.exec(
-            select(Fixture, Gameweek).join(Gameweek, Gameweek.gw_id == Fixture.gw_id)
+            select(
+                Fixture,
+                Gameweek,
+                HomeTeam.team_name,
+                AwayTeam.team_name,
+            )
+            .join(Gameweek, Gameweek.gw_id == Fixture.gw_id)
+            .join(HomeTeam, HomeTeam.team_id == Fixture.home_team_id)
+            .join(AwayTeam, AwayTeam.team_id == Fixture.away_team_id)
         ).all()
         return [
             {
                 "fixture_id": f.fixture_id,
                 "gw_id": str(f.gw_id),
                 "home_team_id": f.home_team_id,
+                "home_team_name": home_name,
                 "away_team_id": f.away_team_id,
+                "away_team_name": away_name,
                 "date": f.date.isoformat(),
                 "home_team_score": f.home_team_score,
                 "away_team_score": f.away_team_score,
                 "gw_status": gw.status,
             }
-            for (f, gw) in rows
+            for (f, gw, home_name, away_name) in rows
         ]
 
     def fixtures_for_gw(self, gameweek_id: str) -> list[dict]:
         gw_id = int(gameweek_id)
-        rows = self.session.exec(select(Fixture).where(Fixture.gw_id == gw_id)).all()
+        HomeTeam = aliased(Team)
+        AwayTeam = aliased(Team)
+        rows = self.session.exec(
+            select(
+                Fixture,
+                HomeTeam.team_name,
+                AwayTeam.team_name,
+            )
+            .where(Fixture.gw_id == gw_id)
+            .join(HomeTeam, HomeTeam.team_id == Fixture.home_team_id)
+            .join(AwayTeam, AwayTeam.team_id == Fixture.away_team_id)
+        ).all()
         return [
             {
                 "fixture_id": f.fixture_id,
                 "gw_id": str(f.gw_id),
                 "home_team_id": f.home_team_id,
+                "home_team_name": home_name,
                 "away_team_id": f.away_team_id,
+                "away_team_name": away_name,
                 "date": f.date.isoformat(),
                 "home_team_score": f.home_team_score,
                 "away_team_score": f.away_team_score,
             }
-            for f in rows
+            for (f, home_name, away_name) in rows
         ]
 
     def results_for_gw(self, gameweek_id: str) -> list[dict]:
