@@ -21,7 +21,7 @@ from starlette.responses import Response
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 from app.auth.routes import auth_router
-from app.fixtures.routes import fixtures_router
+from app.fixtures.routes import fixtures_router, gameweeks_router
 from app.logger import logger
 from app.manager.routes import manager_router
 from app.player.routes import player_router
@@ -96,6 +96,7 @@ app.include_router(player_router, prefix=f"{settings.API_V1_PREFIX}")
 app.include_router(team_router, prefix=f"{settings.API_V1_PREFIX}")
 app.include_router(manager_router, prefix=f"{settings.API_V1_PREFIX}")
 app.include_router(fixtures_router, prefix=f"{settings.API_V1_PREFIX}")
+app.include_router(gameweeks_router, prefix=f"{settings.API_V1_PREFIX}/gameweeks")
 app.include_router(scoring_router, prefix=f"{settings.API_V1_PREFIX}")
 
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, status
 from sqlmodel import Session, select
 
@@ -7,7 +9,8 @@ from app.fixtures.service import FixturesService
 from app.utils.db import get_session
 from app.utils.responses import ResponseSchema
 
-fixtures_router = APIRouter(tags=["Fixtures"])
+fixtures_router = APIRouter(prefix="/fixtures", tags=["Fixtures"])
+gameweeks_router = APIRouter(tags=["Gameweeks"])
 
 
 @fixtures_router.get("/fixtures")
@@ -28,7 +31,7 @@ def results_for_gw(gameweek_id: str, session: Session = Depends(get_session)):
     return ResponseSchema.success(data=data)
 
 
-@fixtures_router.post("/gameweeks", status_code=status.HTTP_201_CREATED)
+@gameweeks_router.post("", status_code=status.HTTP_201_CREATED)
 def create_gameweek(
     gw_number: int,
     start_date: str | None = None,
@@ -59,32 +62,98 @@ def create_gameweek(
     return ResponseSchema.success(data={"gw_id": str(gw.gw_id), "gw_number": gw.gw_number})
 
 
-@fixtures_router.put("/gameweeks/{gw_id}/activate")
-def activate_gameweek(gw_id: str, session: Session = Depends(get_session)):
+@gameweeks_router.post("/complete-current")
+def complete_current_gameweek(session: Session = Depends(get_session)):
+    """
+    Complete current gameweek and prepare next gameweek.
+    
+    Flow:
+    1. Find current 'open' gameweek
+    2. Mark it as completed
+    3. Copy all manager squads to next gameweek
+    4. Open next gameweek for transfers
+    """
     from app.db_models import Gameweek
+    from app.fixtures.service import FixturesService
 
-    # Complete any currently active gameweek first and recalculate manager totals
-    rows = session.exec(select(Gameweek)).all()
-    prev_active: Gameweek | None = None
-    for g in rows:
-        if g.status == "active" and str(g.gw_id) != gw_id:
-            g.status = "completed"
-            prev_active = g
-            session.add(g)
-    # Gameweek uses integer ID, not UUID
-    gw = session.get(Gameweek, int(gw_id))
-    if not gw:
-        return ResponseSchema.not_found("Gameweek not found")
-    gw.status = "active"
-    session.add(gw)
+    # Find current open gameweek
+    current_gw = session.exec(
+        select(Gameweek)
+        .where(Gameweek.status == "open")
+        .order_by(Gameweek.gw_number)
+    ).first()
+    
+    if not current_gw:
+        return ResponseSchema.bad_request("No open gameweek found to complete")
+
+    # Find next gameweek
+    next_gw = session.exec(
+        select(Gameweek)
+        .where(
+            (Gameweek.gw_number > current_gw.gw_number) &
+            (Gameweek.status == "upcoming")
+        )
+        .order_by(Gameweek.gw_number)
+    ).first()
+    
+    if not next_gw:
+        return ResponseSchema.bad_request("No upcoming gameweek found to open")
+
+    # Mark current as completed
+    current_gw.status = "completed"
+    current_gw.updated_at = datetime.utcnow()
+    session.add(current_gw)
+    
+    # Open next gameweek
+    next_gw.status = "open"
+    next_gw.updated_at = datetime.utcnow()
+    session.add(next_gw)
+    
+    # Commit changes
     session.commit()
+    
+    # Copy squads to next gameweek
+    svc = FixturesService(session)
+    svc.copy_squads_to_next_gameweek(current_gw.gw_id)
+    
+    # Recalculate points with penalties
+    from app.scoring.service import ScoringService
+    scoring = ScoringService(session)
+    scoring.recalculate_all_manager_points(current_gw.gw_id)
+    
+    return ResponseSchema.success(
+        message="Gameweek transition completed",
+        data={
+            "completed_gw": {
+                "id": str(current_gw.gw_id),
+                "number": current_gw.gw_number
+            },
+            "opened_gw": {
+                "id": str(next_gw.gw_id),
+                "number": next_gw.gw_number
+            }
+        }
+    )
 
-    # After committing previous GW completion, apply penalties by recalculating totals
-    if prev_active is not None:
-        from app.scoring.service import ScoringService
-        scoring = ScoringService(session)
-        scoring.recalculate_all_manager_points(prev_active.gw_id)
 
-    return ResponseSchema.success(message="Gameweek activated", data={"gw_id": str(gw.gw_id)})
+@gameweeks_router.post("/open-next")
+def open_next_gameweek(session: Session = Depends(get_session)):
+    """Open the transfer window for the next gameweek (oldest upcoming)."""
+    from app.fixtures.service import FixturesService
+    
+    svc = FixturesService(session)
+    success, message, opened_gw = svc.open_transfer_window()
+    
+    if not success:
+        return ResponseSchema.bad_request(message)
+        
+    return ResponseSchema.success(
+        message=message,
+        data={
+            "gw_id": str(opened_gw.gw_id),
+            "gw_number": opened_gw.gw_number,
+            "status": opened_gw.status
+        }
+    )
 
 

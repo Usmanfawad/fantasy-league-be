@@ -127,9 +127,9 @@ def substitute_player(
 
     svc = _svc(session)
     result = svc.substitute(mid, player_out_id, player_in_id)
-    if result == "OK":
-        return ResponseSchema.success(message="Substitution applied")
-    return ResponseSchema.bad_request(result)
+    if result != "OK":
+        return ResponseSchema.bad_request(result)
+    return ResponseSchema.success(message="Substitution applied")
 
 
 @manager_router.put("/{manager_id}/transfers/{transfer_id}")

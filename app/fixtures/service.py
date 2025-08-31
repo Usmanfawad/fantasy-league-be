@@ -306,23 +306,15 @@ class FixturesService:
             for f in fixtures
         ]
 
-    def open_transfer_window(self, gw_id: int) -> tuple[bool, str]:
+    def open_transfer_window(self) -> tuple[bool, str, Gameweek | None]:
         """
-        Manually open the transfer window for a gameweek (UPCOMING → OPEN transition).
-        This should only be called by admin users.
+        Open the transfer window for the next gameweek.
+        Finds the oldest upcoming gameweek and opens it for transfers.
         
         Returns:
-            tuple[bool, str]: (success, message)
+            tuple[bool, str, Gameweek | None]: (success, message, opened_gameweek)
         """
-        # Get gameweek and verify it's in UPCOMING state
-        gw = self.session.get(Gameweek, gw_id)
-        if not gw:
-            return False, "Gameweek not found"
-            
-        if gw.status != "upcoming":
-            return False, f"Cannot open transfer window. GW in {gw.status} state"
-            
-        # Check if any other gameweek is already open
+        # Check if any gameweek is already open
         open_gw = self.session.exec(
             select(Gameweek)
             .where(Gameweek.status == "open")
@@ -330,17 +322,28 @@ class FixturesService:
         
         if open_gw:
             msg = f"Cannot open window. GW {open_gw.gw_number} already open"
-            return False, msg
+            return False, msg, None
+            
+        # Find oldest upcoming gameweek
+        next_gw = self.session.exec(
+            select(Gameweek)
+            .where(Gameweek.status == "upcoming")
+            .order_by(Gameweek.gw_number)
+            .limit(1)
+        ).first()
+        
+        if not next_gw:
+            return False, "No upcoming gameweeks found", None
             
         # Open the transfer window
-        gw.status = "open"
-        gw.updated_at = datetime.utcnow()
-        self.session.add(gw)
+        next_gw.status = "open"
+        next_gw.updated_at = datetime.utcnow()
+        self.session.add(next_gw)
         
         # Initialize manager gameweek states if not already done
         manager_states = self.session.exec(
             select(ManagerGameweekState)
-            .where(ManagerGameweekState.gw_id == gw_id)
+            .where(ManagerGameweekState.gw_id == next_gw.gw_id)
         ).all()
         
         if not manager_states:
@@ -354,7 +357,7 @@ class FixturesService:
             for manager in managers:
                 state = ManagerGameweekState(
                     manager_id=manager.manager_id,
-                    gw_id=gw_id,
+                    gw_id=next_gw.gw_id,
                     free_transfers=1,
                     transfers_made=0,
                     squad_points=0,
@@ -368,5 +371,5 @@ class FixturesService:
                 self.session.add(state)
         
         self.session.commit()
-        return True, f"Transfer window opened for GW {gw.gw_number}"
+        return True, f"Transfer window opened for GW {next_gw.gw_number}", next_gw
 

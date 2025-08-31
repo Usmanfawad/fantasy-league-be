@@ -117,12 +117,15 @@ def seed_gameweeks(session: Session, count: int = 3) -> list[Gameweek]:
     for i in range(1, count + 1):
         start = base + timedelta(days=(i - 1) * 7)
         end = start + timedelta(days=6)
+        # First gameweek is 'open' for transfers
+        # All others are 'upcoming'
+        status = "open" if i == 1 else "upcoming"
         gws.append(
             Gameweek(
                 gw_number=i,
                 start_date=start.replace(tzinfo=None),
                 end_date=end.replace(tzinfo=None),
-                status="active" if i == 1 else "Upcoming",
+                status=status,
                 created_at=datetime.now(UTC).replace(tzinfo=None),
                 updated_at=datetime.now(UTC).replace(tzinfo=None),
             )

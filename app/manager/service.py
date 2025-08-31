@@ -462,48 +462,58 @@ class ManagerService:
         ).first()
         if not out_row or not in_row:
             return "Both players must be in the squad"
+        
+        # Fetch player position details for fast-path checks
+        out_player = self.session.get(Player, out_row.player_id)
+        in_player = self.session.get(Player, in_row.player_id)
+        if out_player is None or in_player is None:
+            return "Player data not found"
+        
+        # Substitution must be between one starter and one bench player
+        if out_row.is_starter == in_row.is_starter:
+            return "Substitution requires one starter and one bench player"
+        
+        # Fast path: if both players share the same position, formation cannot change.
+        # Perform the swap immediately without heavy validation.
+        if out_player.position_id == in_player.position_id:
+            out_row.is_starter, in_row.is_starter = in_row.is_starter, out_row.is_starter
+            self.session.add(out_row)
+            self.session.add(in_row)
+            self.session.commit()
+            return "OK"
             
-        # Get all current starters
-        starters = self.session.exec(
-            select(ManagersSquad.player_id, Player.position_id)
+        # Get current formation before substitution
+        current_formation = self.session.exec(
+            select(ManagersSquad.player_id, Player.position_id, ManagersSquad.is_starter)
             .where(
                 (ManagersSquad.manager_id == manager_id)
                 & (ManagersSquad.gw_id == gw.gw_id)
-                & (ManagersSquad.is_starter == True)  # noqa: E712
             )
             .join(Player, Player.player_id == ManagersSquad.player_id)
         ).all()
         
-        # Calculate new starters after substitution
-        starter_ids = set(pid for pid, _ in starters)
-        
-        # Remove both players from current starter set
-        if out_row.is_starter:
-            starter_ids.remove(player_out_id)
-        if in_row.is_starter:
-            starter_ids.remove(player_in_id)
-        
-        # Add them back based on their swapped status
-        # After swap: out_row gets in_row's starter status, in_row gets out_row's starter status
-        if in_row.is_starter:  # out_row will become starter (gets in_row's current status)
-            starter_ids.add(player_out_id)
-        if out_row.is_starter:  # in_row will become starter (gets out_row's current status)
-            starter_ids.add(player_in_id)
-            
-        # Validate starting 11 positions AFTER applying the prospective swap
-        # Ensure we still have exactly 11 starters
-        if len(starter_ids) != 11:
-            return f"Invalid formation after substitution. Expected 11 starters, got {len(starter_ids)}"
-
-        # Recompute position counts for the updated starter set
+        # Calculate new formation after substitution
         pos_counts: dict[int, int] = defaultdict(int)
-        pos_rows = self.session.exec(
-            select(Player.position_id).where(
-                Player.player_id.in_(list(starter_ids))
-            )
-        ).all()
-        for (pos_id,) in pos_rows:  # Unpack the tuple
-            pos_counts[pos_id] += 1
+        starter_count = 0
+        
+        for squad_player_id, position_id, is_starter in current_formation:
+            # For the players being substituted, use their new starter status
+            if squad_player_id == player_out_id:
+                if in_row.is_starter:  # out_row gets in_row's status
+                    pos_counts[position_id] += 1
+                    starter_count += 1
+            elif squad_player_id == player_in_id:
+                if out_row.is_starter:  # in_row gets out_row's status
+                    pos_counts[position_id] += 1
+                    starter_count += 1
+            # For all other players, use their current status
+            elif is_starter:
+                pos_counts[position_id] += 1
+                starter_count += 1
+            
+        # Validate we have exactly 11 starters
+        if starter_count != 11:
+            return f"Invalid formation after substitution. Expected 11 starters, got {starter_count}"
 
         # Basic formation validation (at least 1 GK, 3 DEF, 2 MID, 1 FWD)
         min_required = {1: 1, 2: 3, 3: 2, 4: 1}
@@ -511,13 +521,18 @@ class ManagerService:
         
         # Check each position requirement and build specific error message
         missing_positions = []
+        excess_positions = []
         for pos_id, min_count in min_required.items():
             current_count = pos_counts.get(pos_id, 0)
             if current_count < min_count:
-                missing_positions.append(f"{position_names[pos_id]}: {current_count}/{min_count}")
+                missing_positions.append(f"{position_names[pos_id]}: have {current_count}, need {min_count}")
+            elif current_count > min_count + 2:  # Allow some flexibility but not too much
+                excess_positions.append(f"{position_names[pos_id]}: have {current_count}, max {min_count + 2}")
         
         if missing_positions:
-            return f"Invalid formation after substitution. Missing: {', '.join(missing_positions)}"
+            return f"Formation invalid after substitution - too few: {', '.join(missing_positions)}"
+        if excess_positions:
+            return f"Formation invalid after substitution - too many: {', '.join(excess_positions)}"
             
         # Apply the substitution
         out_row.is_starter, in_row.is_starter = in_row.is_starter, out_row.is_starter
