@@ -502,7 +502,7 @@ class ManagerService:
                 Player.player_id.in_(list(starter_ids))
             )
         ).all()
-        for pos_id in pos_rows:
+        for (pos_id,) in pos_rows:  # Unpack the tuple
             pos_counts[pos_id] += 1
 
         # Basic formation validation (at least 1 GK, 3 DEF, 2 MID, 1 FWD)

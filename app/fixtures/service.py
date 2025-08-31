@@ -9,6 +9,7 @@ from sqlmodel import Session, select
 from app.db_models import (
     Fixture,
     Gameweek,
+    Manager,
     ManagerGameweekState,
     ManagersSquad,
     PlayerPrice,
@@ -304,4 +305,68 @@ class FixturesService:
             }
             for f in fixtures
         ]
+
+    def open_transfer_window(self, gw_id: int) -> tuple[bool, str]:
+        """
+        Manually open the transfer window for a gameweek (UPCOMING → OPEN transition).
+        This should only be called by admin users.
+        
+        Returns:
+            tuple[bool, str]: (success, message)
+        """
+        # Get gameweek and verify it's in UPCOMING state
+        gw = self.session.get(Gameweek, gw_id)
+        if not gw:
+            return False, "Gameweek not found"
+            
+        if gw.status != "upcoming":
+            return False, f"Cannot open transfer window. GW in {gw.status} state"
+            
+        # Check if any other gameweek is already open
+        open_gw = self.session.exec(
+            select(Gameweek)
+            .where(Gameweek.status == "open")
+        ).first()
+        
+        if open_gw:
+            msg = f"Cannot open window. GW {open_gw.gw_number} already open"
+            return False, msg
+            
+        # Open the transfer window
+        gw.status = "open"
+        gw.updated_at = datetime.utcnow()
+        self.session.add(gw)
+        
+        # Initialize manager gameweek states if not already done
+        manager_states = self.session.exec(
+            select(ManagerGameweekState)
+            .where(ManagerGameweekState.gw_id == gw_id)
+        ).all()
+        
+        if not manager_states:
+            # Get all managers
+            managers = self.session.exec(
+                select(Manager)
+            ).all()
+            
+            # Create initial states for all managers
+            now = datetime.utcnow()
+            for manager in managers:
+                state = ManagerGameweekState(
+                    manager_id=manager.manager_id,
+                    gw_id=gw_id,
+                    free_transfers=1,
+                    transfers_made=0,
+                    squad_points=0,
+                    captain_bonus=0,
+                    transfer_penalty=0,
+                    total_gw_points=0,
+                    bench_points=0,
+                    vice_captain_used=False,
+                    created_at=now
+                )
+                self.session.add(state)
+        
+        self.session.commit()
+        return True, f"Transfer window opened for GW {gw.gw_number}"
 

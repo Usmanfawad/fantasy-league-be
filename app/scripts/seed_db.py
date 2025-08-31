@@ -335,7 +335,7 @@ def main() -> None:
     with Session(engine) as session:
         positions = seed_positions(session)
         teams = seed_teams(session)  # Will use 6 Moroccan teams
-        players = seed_players(session, teams, positions, per_team=7)  # Reduced players per team
+        players = seed_players(session, teams, positions, per_team=15)  # Reduced players per team
         gws = seed_gameweeks(session, count=3)  # Match notebook's 3 gameweeks
         fixtures = seed_fixtures(session, gws, teams)
         seed_scoring_rules(session, positions)
