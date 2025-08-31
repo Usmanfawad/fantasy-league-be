@@ -150,21 +150,32 @@ class FixturesService:
             )
             self.session.add(new_squad)
 
-            # Reset manager gameweek state
-            new_state = ManagerGameweekState(
-                manager_id=squad.manager_id,
-                gw_id=next_gw.gw_id,
-                free_transfers=1,  # Reset to 1 free transfer
-                transfers_made=0,
-                squad_points=0,
-                captain_bonus=0,
-                transfer_penalty=0,
-                total_gw_points=0,
-                bench_points=0,
-                vice_captain_used=False,
-                created_at=now
-            )
-            self.session.add(new_state)
+        # Get unique manager IDs and create manager gameweek states
+        unique_manager_ids = set(squad.manager_id for squad in squads)
+        for manager_id in unique_manager_ids:
+            # Check if manager gameweek state already exists to avoid duplicates
+            existing_state = self.session.exec(
+                select(ManagerGameweekState)
+                .where(ManagerGameweekState.manager_id == manager_id)
+                .where(ManagerGameweekState.gw_id == next_gw.gw_id)
+            ).first()
+            
+            if not existing_state:
+                # Reset manager gameweek state
+                new_state = ManagerGameweekState(
+                    manager_id=manager_id,
+                    gw_id=next_gw.gw_id,
+                    free_transfers=1,  # Reset to 1 free transfer
+                    transfers_made=0,
+                    squad_points=0,
+                    captain_bonus=0,
+                    transfer_penalty=0,
+                    total_gw_points=0,
+                    bench_points=0,
+                    vice_captain_used=False,
+                    created_at=now
+                )
+                self.session.add(new_state)
 
         self.session.commit()
 
