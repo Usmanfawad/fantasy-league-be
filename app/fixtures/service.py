@@ -17,6 +17,7 @@ from app.db_models import (
     Team,
     Transfer,
 )
+from app.scoring.service import ScoringService
 
 
 class FixturesService:
@@ -119,10 +120,13 @@ class FixturesService:
         Copy all manager squads from completed gameweek to next gameweek.
         Also resets manager gameweek states with new free transfers.
         """
-        # Get next gameweek
+        # Resolve completed GW and find the true next GW by gw_number
+        completed_gw = self.session.get(Gameweek, completed_gw_id)
+        if not completed_gw:
+            return
         next_gw = self.session.exec(
             select(Gameweek)
-            .where(Gameweek.gw_number > completed_gw_id)
+            .where(Gameweek.gw_number > completed_gw.gw_number)
             .order_by(Gameweek.gw_number)
             .limit(1)
         ).first()
@@ -161,11 +165,20 @@ class FixturesService:
             ).first()
             
             if not existing_state:
-                # Reset manager gameweek state
+                # Carry over free transfers from the completed GW: new = min(3, prev_free + 1)
+                prev_state = self.session.exec(
+                    select(ManagerGameweekState)
+                    .where(ManagerGameweekState.manager_id == manager_id)
+                    .where(ManagerGameweekState.gw_id == completed_gw_id)
+                ).first()
+                prev_free = 1 if prev_state is None else int(prev_state.free_transfers or 0)
+                new_free = 1 if prev_state is None else min(3, prev_free + 1)
+
+                # Reset manager gameweek state for next GW
                 new_state = ManagerGameweekState(
                     manager_id=manager_id,
                     gw_id=next_gw.gw_id,
-                    free_transfers=1,  # Reset to 1 free transfer
+                    free_transfers=new_free,
                     transfers_made=0,
                     squad_points=0,
                     captain_bonus=0,
@@ -259,9 +272,15 @@ class FixturesService:
                     active_gw.status = "completed"
                     active_gw.updated_at = current_time
                     self.session.add(active_gw)
+                    # Persist completion before downstream operations rely on status
+                    self.session.commit()
 
                     # Copy squads to next gameweek when completing current one
-                self.copy_squads_to_next_gameweek(active_gw.gw_id)
+                    self.copy_squads_to_next_gameweek(active_gw.gw_id)
+
+                    # Recalculate and persist all managers' points for the completed GW now
+                    scoring = ScoringService(self.session)
+                    scoring.recalculate_all_manager_points(active_gw.gw_id)
 
         self.session.commit()
 
