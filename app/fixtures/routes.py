@@ -33,23 +33,24 @@ def results_for_gw(gameweek_id: str, session: Session = Depends(get_session)):
 
 @gameweeks_router.post("", status_code=status.HTTP_201_CREATED)
 def create_gameweek(
-    gw_number: int,
     start_date: str | None = None,
     end_date: str | None = None,
     session: Session = Depends(get_session),
 ):
-    """Create a new gameweek. Optionally start/end dates; default status=open."""
+    """Create a new gameweek with an auto-incremented gw_number; default status=open."""
     from datetime import datetime
 
     from app.db_models import Gameweek
-    # Prevent duplicate numbers
-    existing = session.exec(select(Gameweek).where(Gameweek.gw_number == gw_number)).first()
-    if existing:
-        return ResponseSchema.bad_request("Gameweek number already exists")
+
+    # Determine next gw_number automatically
+    last_gw = session.exec(
+        select(Gameweek).order_by(Gameweek.gw_number.desc()).limit(1)
+    ).first()
+    next_gw_number = (last_gw.gw_number + 1) if last_gw else 1
 
     gw = Gameweek(
         gw_id=None,
-        gw_number=gw_number,
+        gw_number=next_gw_number,
         start_date=datetime.fromisoformat(start_date) if start_date else None,
         end_date=datetime.fromisoformat(end_date) if end_date else None,
         status="open",

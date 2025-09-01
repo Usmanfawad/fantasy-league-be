@@ -190,6 +190,14 @@ class FixturesService:
                 )
                 self.session.add(new_state)
 
+        # Persist copied squads and initialized states for the next GW
+        self.session.commit()
+
+        # Immediately calculate points for the newly opened next gameweek as
+        # PlayerStat data may already exist historically. Penalties are not
+        # applied while the GW is open.
+        scoring = ScoringService(self.session)
+        scoring.recalculate_all_manager_points(next_gw.gw_id)
         self.session.commit()
 
     def update_player_prices(self, gw_id: int) -> None:
