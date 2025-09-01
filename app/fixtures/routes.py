@@ -137,24 +137,24 @@ def complete_current_gameweek(session: Session = Depends(get_session)):
     )
 
 
-@gameweeks_router.post("/open-next")
-def open_next_gameweek(session: Session = Depends(get_session)):
-    """Open the transfer window for the next gameweek (oldest upcoming)."""
-    from app.fixtures.service import FixturesService
-    
-    svc = FixturesService(session)
-    success, message, opened_gw = svc.open_transfer_window()
-    
-    if not success:
-        return ResponseSchema.bad_request(message)
-        
-    return ResponseSchema.success(
-        message=message,
-        data={
-            "gw_id": str(opened_gw.gw_id),
-            "gw_number": opened_gw.gw_number,
-            "status": opened_gw.status
-        }
-    )
+# @gameweeks_router.post("/open-next")
+# def open_next_gameweek(session: Session = Depends(get_session)):
+#     """Open the transfer window for the next gameweek (oldest upcoming)."""
+#     from app.fixtures.service import FixturesService
+#     
+#     svc = FixturesService(session)
+#     success, message, opened_gw = svc.open_transfer_window()
+#     
+#     if not success:
+#         return ResponseSchema.bad_request(message)
+#         
+#     return ResponseSchema.success(
+#         message=message,
+#         data={
+#             "gw_id": str(opened_gw.gw_id),
+#             "gw_number": opened_gw.gw_number,
+#             "status": opened_gw.status
+#         }
+#     )
 
 
