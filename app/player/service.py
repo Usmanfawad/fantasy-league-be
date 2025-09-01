@@ -323,30 +323,38 @@ class PlayerService:
 
         # Sorting
         sort = (sort or "cumulative_points").lower()
-        def sort_value(item: dict[str, Any]) -> float:
-            try:
-                if sort == "gameweek_points":
-                    return float(item["gameweek_points"]) 
-                if sort == "goals":
-                    return float(item["goals"]) 
-                if sort == "assists":
-                    return float(item["assists"]) 
-                if sort == "bonus_points":
-                    return float(item["bonus_points"]) 
-                if sort == "price":
-                    return float(item["current_price"]) 
-                if sort == "minutes_played":
-                    return float(item["minutes_played"]) 
-                if sort == "clean_sheets":
-                    return float(item["clean_sheets"]) 
-                if sort == "selection_percentage":
-                    return float(item["selection_percentage"]) 
-                # default cumulative
-                return float(item["cumulative_points"]) 
-            except Exception:
-                return 0.0
+        # Always stabilize by player_id to avoid "weird" ordering when primary keys tie
+        items.sort(key=lambda it: int(it["player_id"]))
 
-        items.sort(key=sort_value, reverse=True)
+        if sort == "player_id":
+            # Explicit sort by player_id (ascending)
+            # Already stabilized above; sort again to be explicit/no-op
+            items.sort(key=lambda it: int(it["player_id"]))
+        else:
+            def sort_value(item: dict[str, Any]) -> float:
+                try:
+                    if sort == "gameweek_points":
+                        return float(item["gameweek_points"]) 
+                    if sort == "goals":
+                        return float(item["goals"]) 
+                    if sort == "assists":
+                        return float(item["assists"]) 
+                    if sort == "bonus_points":
+                        return float(item["bonus_points"]) 
+                    if sort == "price":
+                        return float(item["current_price"]) 
+                    if sort == "minutes_played":
+                        return float(item["minutes_played"]) 
+                    if sort == "clean_sheets":
+                        return float(item["clean_sheets"]) 
+                    if sort == "selection_percentage":
+                        return float(item["selection_percentage"]) 
+                    # default cumulative
+                    return float(item["cumulative_points"]) 
+                except Exception:
+                    return 0.0
+
+            items.sort(key=sort_value, reverse=True)
         page_items = items[(page - 1) * page_size : (page - 1) * page_size + page_size]
         return page_items, total
 

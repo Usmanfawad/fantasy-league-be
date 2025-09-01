@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import delete, update, func
+from sqlalchemy import delete, func, update
 from sqlmodel import Session, select
 
 from app.db_models import (
@@ -65,6 +65,36 @@ class ManagerService:
             .order_by(Gameweek.gw_number.desc())
             .limit(1)
         ).first()
+
+    def get_scoring_gameweek(self) -> Gameweek | None:
+        """Return the gameweek that should be used for scoring display.
+
+        - If an "active" gameweek exists, use it (matches underway).
+        - Otherwise, use the latest "completed" gameweek (during transfer/open week).
+        - As a last resort, fall back to the latest "open" gameweek.
+        """
+        # Prefer an actually playing gameweek
+        active = self.session.exec(
+            select(Gameweek)
+            .where(Gameweek.status.in_(["active", "Ongoing"]))
+            .order_by(Gameweek.gw_number.desc())
+            .limit(1)
+        ).first()
+        if active is not None:
+            return active
+
+        # Otherwise show points from the most recent completed GW
+        completed = self.session.exec(
+            select(Gameweek)
+            .where(Gameweek.status == "completed")
+            .order_by(Gameweek.gw_number.desc())
+            .limit(1)
+        ).first()
+        if completed is not None:
+            return completed
+
+        # Finally, fall back to open (e.g., very first GW before any matches)
+        return self.get_open_gameweek()
 
     def get_open_gameweek(self) -> Gameweek | None:
         """Return the latest transfer-week gameweek (status == 'open')."""
@@ -190,9 +220,14 @@ class ManagerService:
         return "OK"
 
     def get_squad(self, manager_id: UUID) -> tuple[str | None, list[dict[str, Any]]]:
+        # Keep showing the editable squad for the current GW (can be 'open'),
+        # but compute displayed totals from the latest scoring GW.
         gw = self.get_active_gameweek()
         if gw is None:
             return "No active gameweek", []
+        scoring_gw = self.get_scoring_gameweek()
+        if scoring_gw is None:
+            scoring_gw = gw
         
         # Get squad players with their stats
         rows = self.session.exec(
@@ -204,11 +239,11 @@ class ManagerService:
                   (PlayerStat.gw_id == ManagersSquad.gw_id))
         ).all()
         
-        # Get manager gameweek state for points
+        # Get manager gameweek state for points (use scoring GW)
         state = self.session.exec(
             select(ManagerGameweekState)
             .where(ManagerGameweekState.manager_id == manager_id)
-            .where(ManagerGameweekState.gw_id == gw.gw_id)
+            .where(ManagerGameweekState.gw_id == scoring_gw.gw_id)
         ).first()
         
         data = [
@@ -225,9 +260,8 @@ class ManagerService:
             for (ms, player, player_stat) in rows
         ]
         
-        # Add manager gameweek points
-        gw_row = self.session.get(Gameweek, gw.gw_id)
-        is_completed = gw_row is not None and gw_row.status == "completed"
+        # Add manager gameweek points (from scoring GW)
+        is_completed = scoring_gw.status == "completed"
         squad_info = {
             "squad_players": data,
             "gameweek": gw.gw_id,
@@ -242,7 +276,8 @@ class ManagerService:
         return None, squad_info
 
     def overview(self, manager_id: UUID) -> tuple[str | None, dict[str, Any]]:
-        gw = self.get_active_gameweek()
+        # Always compute overview from the latest scoring GW
+        gw = self.get_scoring_gameweek()
         if gw is None:
             return "No active gameweek", {}
         
@@ -256,7 +291,7 @@ class ManagerService:
         if not state:
             return "No gameweek state found", {}
         
-        # Get squad players with their stats
+        # Get squad players with their stats (for the scoring GW)
         rows = self.session.exec(
             select(ManagersSquad, PlayerStat)
             .where(ManagersSquad.manager_id == manager_id)
@@ -278,8 +313,7 @@ class ManagerService:
             for (_, ps) in rows
         ]
         
-        gw_row = self.session.get(Gameweek, gw.gw_id)
-        is_completed = gw_row is not None and gw_row.status == "completed"
+        is_completed = gw.status == "completed"
         return None, {
             "squad_points": state.squad_points,
             # Hide penalties until the gameweek is completed
@@ -291,7 +325,8 @@ class ManagerService:
         }
 
     def leaderboard(self, page: int, page_size: int) -> tuple[list[dict[str, Any]], int]:
-        current_gw = self.get_active_gameweek()
+        # Use scoring GW so that during an 'open' window the last completed GW shows
+        current_gw = self.get_scoring_gameweek()
         if current_gw is None:
             return [], 0
 
