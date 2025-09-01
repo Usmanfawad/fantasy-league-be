@@ -261,10 +261,11 @@ class ManagerService:
         ]
         
         # Add manager gameweek points (from scoring GW)
-        is_completed = scoring_gw.status == "completed"
+        is_completed = (scoring_gw.status or "").lower() == "completed"
         squad_info = {
             "squad_players": data,
             "gameweek": gw.gw_id,
+            "scoring_gameweek": scoring_gw.gw_id,
             "squad_points": state.squad_points if state else 0,
             # Hide penalties until the gameweek is completed
             "transfer_penalty": (state.transfer_penalty if (state and is_completed) else 0),
@@ -313,7 +314,7 @@ class ManagerService:
             for (_, ps) in rows
         ]
         
-        is_completed = gw.status == "completed"
+        is_completed = (gw.status or "").lower() == "completed"
         return None, {
             "squad_points": state.squad_points,
             # Hide penalties until the gameweek is completed
@@ -321,6 +322,7 @@ class ManagerService:
             "total_gw_points": state.total_gw_points,
             "free_transfers": state.free_transfers,
             "transfers_made": state.transfers_made,
+            "scoring_gameweek": gw.gw_id,
             "players": details
         }
 
