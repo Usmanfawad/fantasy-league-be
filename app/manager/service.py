@@ -61,7 +61,7 @@ class ManagerService:
         # Latest active-like gameweek (treat legacy statuses as active)
         return self.session.exec(
             select(Gameweek)
-            .where(Gameweek.status.in_(["active", "Ongoing", "open"]))
+            .where(func.lower(Gameweek.status).in_(["active", "ongoing", "open"]))
             .order_by(Gameweek.gw_number.desc())
             .limit(1)
         ).first()
@@ -76,7 +76,7 @@ class ManagerService:
         # Prefer an actually playing gameweek
         active = self.session.exec(
             select(Gameweek)
-            .where(Gameweek.status.in_(["active", "Ongoing"]))
+            .where(func.lower(Gameweek.status).in_(["active", "ongoing"]))
             .order_by(Gameweek.gw_number.desc())
             .limit(1)
         ).first()
@@ -86,7 +86,7 @@ class ManagerService:
         # Otherwise show points from the most recent completed GW
         completed = self.session.exec(
             select(Gameweek)
-            .where(Gameweek.status == "completed")
+            .where(func.lower(Gameweek.status) == "completed")
             .order_by(Gameweek.gw_number.desc())
             .limit(1)
         ).first()
@@ -100,7 +100,7 @@ class ManagerService:
         """Return the latest transfer-week gameweek (status == 'open')."""
         return self.session.exec(
             select(Gameweek)
-            .where(Gameweek.status == "open")
+            .where(func.lower(Gameweek.status) == "open")
             .order_by(Gameweek.gw_number.desc())
             .limit(1)
         ).first()
@@ -314,11 +314,10 @@ class ManagerService:
             for (_, ps) in rows
         ]
         
-        is_completed = (gw.status or "").lower() == "completed"
         return None, {
             "squad_points": state.squad_points,
-            # Hide penalties until the gameweek is completed
-            "transfer_penalty": state.transfer_penalty if is_completed else 0,
+            # Always show the transfer penalty in overview regardless of GW status
+            "transfer_penalty": state.transfer_penalty,
             "total_gw_points": state.total_gw_points,
             "free_transfers": state.free_transfers,
             "transfers_made": state.transfers_made,
