@@ -53,7 +53,7 @@ def create_gameweek(
         gw_number=next_gw_number,
         start_date=datetime.fromisoformat(start_date) if start_date else None,
         end_date=datetime.fromisoformat(end_date) if end_date else None,
-        status="open",
+        status="upcoming",
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
     )
