@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import delete, update
+from sqlalchemy import delete, update, func
 from sqlmodel import Session, select
 
 from app.db_models import (
@@ -291,23 +291,66 @@ class ManagerService:
         }
 
     def leaderboard(self, page: int, page_size: int) -> tuple[list[dict[str, Any]], int]:
-        gw = self.get_active_gameweek()
-        if gw is None:
+        current_gw = self.get_active_gameweek()
+        if current_gw is None:
             return [], 0
-        
-        # Get manager gameweek states for proper points calculation
-        rows = self.session.exec(
-            select(Manager.manager_id, Manager.squad_name, ManagerGameweekState.total_gw_points)
+
+        # Points for the current gameweek
+        current_rows = self.session.exec(
+            select(
+                Manager.manager_id,
+                Manager.squad_name,
+                ManagerGameweekState.total_gw_points,
+            )
             .join(ManagerGameweekState, ManagerGameweekState.manager_id == Manager.manager_id)
-            .where(ManagerGameweekState.gw_id == gw.gw_id)
+            .where(ManagerGameweekState.gw_id == current_gw.gw_id)
         ).all()
-        
-        items = sorted(
-            ({"manager_id": str(mid), "squad_name": name, "points": pts} 
-            for mid, name, pts in rows),
-            key=lambda i: i["points"],
-            reverse=True,
-        )
+
+        # Cumulative points up to and including the current gameweek
+        cumulative_rows = self.session.exec(
+            select(
+                ManagerGameweekState.manager_id,
+                func.sum(ManagerGameweekState.total_gw_points),
+            )
+            .join(Gameweek, Gameweek.gw_id == ManagerGameweekState.gw_id)
+            .where(Gameweek.gw_number <= current_gw.gw_number)
+            .group_by(ManagerGameweekState.manager_id)
+        ).all()
+
+        manager_to_cumulative: dict[UUID, int] = {
+            mid: int(sum_pts or 0) for (mid, sum_pts) in cumulative_rows
+        }
+
+        items: list[dict[str, Any]] = []
+        for (mid, name, gw_points) in current_rows:
+            items.append(
+                {
+                    "manager_id": str(mid),
+                    "squad_name": name,
+                    "gameweek_points": int(gw_points or 0),
+                    "cumulative_points": manager_to_cumulative.get(mid, int(gw_points or 0)),
+                }
+            )
+
+        # If a manager has cumulative points but no row in current_rows (edge), include with 0 gw points
+        known_ids = {m[0] for m in current_rows}
+        if len(known_ids) != len(manager_to_cumulative):
+            for mid, total_pts in manager_to_cumulative.items():
+                if mid in known_ids:
+                    continue
+                manager = self.session.get(Manager, mid)
+                items.append(
+                    {
+                        "manager_id": str(mid),
+                        "squad_name": manager.squad_name if manager else "",
+                        "gameweek_points": 0,
+                        "cumulative_points": int(total_pts or 0),
+                    }
+                )
+
+        # Sort by cumulative points desc
+        items.sort(key=lambda i: i["cumulative_points"], reverse=True)
+
         total = len(items)
         start = (page - 1) * page_size
         end = start + page_size
